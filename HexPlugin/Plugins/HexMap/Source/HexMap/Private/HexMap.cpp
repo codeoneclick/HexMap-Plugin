@@ -1,5 +1,4 @@
 #include "HexMapPrivatePCH.h"
- 
 #include "HexMap.h"
  
 void HexMapImpl::StartupModule()

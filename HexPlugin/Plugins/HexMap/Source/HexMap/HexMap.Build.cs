@@ -5,9 +5,21 @@ public class HexMap : ModuleRules
 {
     public HexMap(TargetInfo Target)
     {
-        PrivateIncludePaths.AddRange(new string[] { "HexMap/Private" });
-        PublicIncludePaths.AddRange(new string[] { "HexMap/Public" });
+        PrivateIncludePaths.AddRange(new string[] 
+        {
+            "HexMap/Private"
+        });
+
+        PublicIncludePaths.AddRange(new string[] 
+        {
+            "HexMap/Public"
+        });
  
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Core" });
+        PublicDependencyModuleNames.AddRange(new string[] 
+        {
+            "Core",
+            "CoreUObject",
+            "Engine"
+        });
     }
 }
