@@ -31,4 +31,7 @@ public:
 	
 	UPROPERTY(VisibleDefaultsOnly)
 	class UChildActorComponent* Tile_02;
+
+	UPROPERTY(EditAnywhere)
+	class UHexMapTileMeshesComponent* HexMapTileMeshesComponent;
 };

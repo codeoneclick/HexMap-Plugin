@@ -3,7 +3,7 @@
 #include "HexMapPrivatePCH.h"
 #include "HexMapGrid.h"
 #include "HexMapTile.h"
-
+#include "HexMapTileMeshesComponent.h"
 
 // Sets default values
 AHexMapGrid::AHexMapGrid()
@@ -33,6 +33,9 @@ AHexMapGrid::AHexMapGrid()
 
 	UStaticMeshComponent* MeshComponent_02 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh_02"));
 	MeshComponent_02->AttachToComponent(Tile_02, AttachmentRules);
+
+	HexMapTileMeshesComponent = CreateDefaultSubobject<UHexMapTileMeshesComponent>(TEXT("HexMapTileMeshes"));
+	TilesContainer->AttachToComponent(TilesContainer, AttachmentRules);
 }
 
 // Called when the game starts or when spawned
