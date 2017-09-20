@@ -34,4 +34,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UHexMapTileMeshesComponent* HexMapTileMeshesComponent;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UChildActorComponent*> Tiles;
 };

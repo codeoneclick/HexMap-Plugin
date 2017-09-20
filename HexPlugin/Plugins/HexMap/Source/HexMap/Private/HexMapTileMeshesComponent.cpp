@@ -34,22 +34,15 @@ void UHexMapTileMeshesComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	// ...
 }
 
+#ifdef ENABLED
+
 void UHexMapTileMeshesComponent::PostEditChangeProperty(struct FPropertyChangedEvent& Event)
 {
 	FName PropertyName = (Event.Property != NULL) ? Event.Property->GetFName() : NAME_None;
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(UHexMapTileMeshesComponent, HexMapTileMesh_01))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HexMapTileMesh_01 property changed!"))
-		AHexMapGrid* HexMapGrid = static_cast<AHexMapGrid *>(GetOwner());
-		TArray<USceneComponent *> TilesComponents;
-		HexMapGrid->Tile_01->GetChildrenComponents(true, TilesComponents);
-
-		UStaticMeshComponent* StaticMeshComponent = nullptr;
-		if (TilesComponents.FindItemByClass(&StaticMeshComponent))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("HexMapTile StaticMeshComponent found!"))
-			StaticMeshComponent->SetStaticMesh(HexMapTileMesh_01);
-		}
+		OnHexMapTileMeshesChanged();
 	}
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(UHexMapTileMeshesComponent, HexMapTileMesh_02))
 	{
@@ -64,5 +57,27 @@ void UHexMapTileMeshesComponent::PostEditChangeProperty(struct FPropertyChangedE
 		UE_LOG(LogTemp, Warning, TEXT("HexMapTileMesh_04 property changed!"))
 	}
 	Super::PostEditChangeProperty(Event);
+}
+
+#endif
+
+void UHexMapTileMeshesComponent::OnHexMapTileMeshesChanged()
+{
+	AHexMapGrid* HexMapGrid = static_cast<AHexMapGrid *>(GetOwner());
+	TArray<USceneComponent *> TilesComponents;
+
+	TArray<UChildActorComponent*> Tiles = HexMapGrid->Tiles;
+	for (int TileIndex = 0; TileIndex < Tiles.Num(); ++TileIndex)
+	{
+		UChildActorComponent* Tile = Tiles[TileIndex];
+		Tile->GetChildrenComponents(true, TilesComponents);
+
+		UStaticMeshComponent* StaticMeshComponent = nullptr;
+		if (TilesComponents.FindItemByClass(&StaticMeshComponent))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HexMapTile StaticMeshComponent found!"))
+			StaticMeshComponent->SetStaticMesh(HexMapTileMesh_01);
+		}
+	}
 }
 

@@ -19,7 +19,12 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+#ifdef ENABLED
+
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& Event) override;
+
+#endif
 
 public:	
 	// Called every frame
@@ -36,4 +41,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMesh* HexMapTileMesh_04;
+
+	void OnHexMapTileMeshesChanged();
 };

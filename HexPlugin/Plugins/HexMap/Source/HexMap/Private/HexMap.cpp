@@ -11,4 +11,4 @@ void HexMapImpl::ShutdownModule()
     
 }
  
-IMPLEMENT_MODULE(HexMapImpl, Module)
+IMPLEMENT_MODULE(HexMapImpl, HexMap)

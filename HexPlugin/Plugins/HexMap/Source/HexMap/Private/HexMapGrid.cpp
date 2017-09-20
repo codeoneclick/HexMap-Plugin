@@ -4,6 +4,8 @@
 #include "HexMapGrid.h"
 #include "HexMapTile.h"
 #include "HexMapTileMeshesComponent.h"
+#include "FHexMapUtility.h"
+#include <sstream>
 
 // Sets default values
 AHexMapGrid::AHexMapGrid()
@@ -35,14 +37,53 @@ AHexMapGrid::AHexMapGrid()
 	MeshComponent_02->AttachToComponent(Tile_02, AttachmentRules);
 
 	HexMapTileMeshesComponent = CreateDefaultSubobject<UHexMapTileMeshesComponent>(TEXT("HexMapTileMeshes"));
-	TilesContainer->AttachToComponent(TilesContainer, AttachmentRules);
+
+	int TileWidth = 32;
+	int TileHeight = 32;
+
+	FHexMapUtility::Layout HexMapLayout = FHexMapUtility::Layout(FHexMapUtility::LayoutPointy,
+		FHexMapUtility::Point(TileWidth, TileHeight),
+		FHexMapUtility::Point(0, 0));
+
+	int Index = 0;
+	int HexMapRadius = 10;
+	for (int Q = -HexMapRadius; Q <= HexMapRadius; ++Q)
+	{
+		int R1 = std::max(-HexMapRadius, -Q - HexMapRadius);
+		int R2 = std::min(HexMapRadius, -Q + HexMapRadius);
+
+		for (int R = R1; R <= R2; R++)
+		{
+			FHexMapUtility::Hex HexPosition = FHexMapUtility::Hex(Q, R, -Q - R);
+			FHexMapUtility::Point Position = FHexMapUtility::HexToPixel(HexMapLayout, HexPosition);
+
+			std::stringstream TileStrStream;
+			TileStrStream << "Tile" << Index;
+			FString TileStrName = FString(TileStrStream.str().c_str());
+			FName TileName = FName(*TileStrName);
+			UChildActorComponent* Tile = CreateDefaultSubobject<UChildActorComponent>(TileName);
+			Tile->SetChildActorClass(AHexMapTile::StaticClass());
+			Tile->CreateChildActor();
+			Tile->SetRelativeLocation(FVector(Position.x, Position.y, 40.f));
+
+			std::stringstream TileMeshComponentStrStream;
+			TileMeshComponentStrStream << "TileMeshComponent" << Index;
+			FString TileMeshComponentStrName = FString(TileMeshComponentStrStream.str().c_str());
+			FName TileMeshComponentName = FName(*TileMeshComponentStrName);
+			UStaticMeshComponent* MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TileMeshComponentName);
+			MeshComponent->AttachToComponent(Tile, AttachmentRules);
+			Tiles.Add(Tile);
+			Index++;
+		}
+	}
 }
 
 // Called when the game starts or when spawned
 void AHexMapGrid::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	HexMapTileMeshesComponent->OnHexMapTileMeshesChanged();
+	UE_LOG(LogTemp, Warning, TEXT("HexMapGrid added to scene!"))
 }
 
 // Called every frame
