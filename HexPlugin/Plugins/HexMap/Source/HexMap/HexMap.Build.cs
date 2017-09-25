@@ -19,7 +19,22 @@ public class HexMap : ModuleRules
         {
             "Core",
             "CoreUObject",
-            "Engine"
+            "Engine",
+            "Slate",
+            "EditorStyle",
+            "UnrealEd"
+        });
+
+        PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "InputCore",
+            "SlateCore",
+            "RenderCore",
+            "PropertyEditor",
+            "WorkspaceMenuStructure",
+            "LevelEditor",
+            "EditorStyle",
+            "ContentBrowser"
         });
     }
 }

@@ -3,7 +3,7 @@
 #include "HexMapPrivatePCH.h"
 #include "HexMap.h"
 #include "HexMapTileObjectActor.h"
-#include "HexMapGrid.h"
+#include "HexMapGeneralActor.h"
 
 // Sets default values
 AHexMapTileObjectActor::AHexMapTileObjectActor()
@@ -24,19 +24,67 @@ void AHexMapTileObjectActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AHexMapTileObjectActor::EditorApplyTranslation
-(
-	const FVector & DeltaTranslation,
-	bool bAltDown,
-	bool bShiftDown,
-	bool bCtrlDown
-)
+void AHexMapTileObjectActor::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
 {
-	Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
-	for (TActorIterator<AHexMapGrid> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	for (TActorIterator<AHexMapGeneralActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AHexMapGrid actor found!"));
+		UE_LOG(LogTemp, Warning, TEXT("AHexMapGeneralActor actor found!"));
+		AHexMapGeneralActor* HexMapGeneralActor = *ActorItr;
+		FVector MoveDirection = DeltaTranslation;
+		MoveDirection.Normalize();
+		MoveDirection *= 32.f * 1.5f;
+		FVector CurrentPosition = GetActorLocation();
+		FVector PredictedPosition = CurrentPosition + MoveDirection;
+		TArray<FVector> HexMapChunkTilePositions = HexMapGeneralActor->HexMapChunkTilePositions;
+		FVector NearestHexMapChunkTilePosition = FVector();
+		float NearestDistance = 2048.f;
+		for (int HexMapChunkTilePositionIndex = 0; HexMapChunkTilePositionIndex < HexMapChunkTilePositions.Num(); ++HexMapChunkTilePositionIndex)
+		{
+			float CurrentDistance = PredictedPosition.Distance(PredictedPosition, HexMapChunkTilePositions[HexMapChunkTilePositionIndex]);
+			if (CurrentDistance < NearestDistance)
+			{
+				NearestDistance = CurrentDistance;
+				NearestHexMapChunkTilePosition = HexMapChunkTilePositions[HexMapChunkTilePositionIndex];
+			}
+		}
+		if (NearestDistance < 32.f * 1.5f)
+		{
+			Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
+		}
 	}
 	UE_LOG(LogTemp, Warning, TEXT("AHexMapTileObjectActor translated in editor!"));
+}
+
+void AHexMapTileObjectActor::OnEditorMousePressed()
+{
+
+}
+
+void AHexMapTileObjectActor::OnEditorMouseReleased()
+{
+	for (TActorIterator<AHexMapGeneralActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AHexMapGeneralActor actor found!"));
+		AHexMapGeneralActor* HexMapGeneralActor = *ActorItr;
+		//FVector MoveDirection = DeltaTranslation;
+		//MoveDirection.Normalize();
+		//MoveDirection *= 32.f * 1.5f;
+		FVector CurrentPosition = GetActorLocation();
+		//FVector PredictedPosition = CurrentPosition + MoveDirection;
+		TArray<FVector> HexMapChunkTilePositions = HexMapGeneralActor->HexMapChunkTilePositions;
+		FVector NearestHexMapChunkTilePosition = FVector();
+		float NearestDistance = 2048.f;
+		for (int HexMapChunkTilePositionIndex = 0; HexMapChunkTilePositionIndex < HexMapChunkTilePositions.Num(); ++HexMapChunkTilePositionIndex)
+		{
+			float CurrentDistance = CurrentPosition.Distance(CurrentPosition, HexMapChunkTilePositions[HexMapChunkTilePositionIndex]);
+			if (CurrentDistance < NearestDistance)
+			{
+				NearestDistance = CurrentDistance;
+				NearestHexMapChunkTilePosition = HexMapChunkTilePositions[HexMapChunkTilePositionIndex];
+			}
+		}
+		SetActorLocation(NearestHexMapChunkTilePosition);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("AHexMapTileObjectActor OnEditorMouseReleased!"));
 }
 
