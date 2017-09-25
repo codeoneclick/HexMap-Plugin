@@ -11,7 +11,7 @@ AHexMapGeneralActor::AHexMapGeneralActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HexMapGeneralRoot"));;
 }
 
 // Called when the game starts or when spawned
@@ -26,7 +26,7 @@ void AHexMapGeneralActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AHexMapGeneralActor::OnHexMapChunkActorChangedPosition()
+void AHexMapGeneralActor::OnHexMapChunkActorChangedLocation()
 {
 	HexMapChunkTilePositions.Empty();
 	for (int HexMapChunkActorIndex = 0; HexMapChunkActorIndex < HexMapChunkActors.Num(); ++HexMapChunkActorIndex)
@@ -46,3 +46,14 @@ void AHexMapGeneralActor::OnHexMapChunkActorChangedPosition()
 	}
 }
 
+void AHexMapGeneralActor::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
+{
+	Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
+	AHexMapGeneralActor::OnHexMapChunkActorChangedLocation();
+}
+
+void AHexMapGeneralActor::EditorApplyRotation(const FRotator & DeltaRotation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
+{
+	Super::EditorApplyRotation(DeltaRotation, bAltDown, bShiftDown, bCtrlDown);
+	AHexMapGeneralActor::OnHexMapChunkActorChangedLocation();
+}

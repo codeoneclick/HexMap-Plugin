@@ -66,11 +66,7 @@ void AHexMapTileObjectActor::OnEditorMouseReleased()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AHexMapGeneralActor actor found!"));
 		AHexMapGeneralActor* HexMapGeneralActor = *ActorItr;
-		//FVector MoveDirection = DeltaTranslation;
-		//MoveDirection.Normalize();
-		//MoveDirection *= 32.f * 1.5f;
 		FVector CurrentPosition = GetActorLocation();
-		//FVector PredictedPosition = CurrentPosition + MoveDirection;
 		TArray<FVector> HexMapChunkTilePositions = HexMapGeneralActor->HexMapChunkTilePositions;
 		FVector NearestHexMapChunkTilePosition = FVector();
 		float NearestDistance = 2048.f;

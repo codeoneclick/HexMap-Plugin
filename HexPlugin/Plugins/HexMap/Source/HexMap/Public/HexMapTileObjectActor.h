@@ -18,14 +18,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	virtual void EditorApplyTranslation
-	(
-		const FVector & DeltaTranslation,
-		bool bAltDown,
-		bool bShiftDown,
-		bool bCtrlDown
-	) override;
+	virtual void EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown) override;
 
 public:	
 	// Called every frame

@@ -19,6 +19,9 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown) override;
+	virtual void EditorApplyRotation(const FRotator & DeltaRotation, bool bAltDown, bool bShiftDown, bool bCtrlDown) override;
+
 public:	
 
 	virtual void Tick(float DeltaTime) override;
@@ -29,5 +32,5 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TArray<FVector> HexMapChunkTilePositions;
 	
-	void OnHexMapChunkActorChangedPosition();
+	void OnHexMapChunkActorChangedLocation();
 };

@@ -94,12 +94,7 @@ void AHexMapChunkActor::CreateTiles()
 			HexMapComponent->HexMapTilesComponents.Add(HexMapTileComponent);
 		}
 	}
-	for (TActorIterator<AHexMapGeneralActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AHexMapGeneralActor actor found!"));
-		AHexMapGeneralActor* HexMapGeneralActor = *ActorItr;
-		HexMapGeneralActor->OnHexMapChunkActorChangedPosition();
-	}
+	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();
 }
 
 void AHexMapChunkActor::DestroyTiles()
@@ -172,6 +167,30 @@ void AHexMapChunkActor::OnHexMapTileSizeChanged()
 			HexMapTileIndex++;
 		}
 	}
+	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();
 }
+
+void AHexMapChunkActor::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
+{
+	Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
+	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();
+}
+
+void AHexMapChunkActor::EditorApplyRotation(const FRotator & DeltaRotation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
+{
+	Super::EditorApplyRotation(DeltaRotation, bAltDown, bShiftDown, bCtrlDown);
+	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();
+}
+
+void AHexMapChunkActor::OnHexMapChunkActorChangedLocation()
+{
+	for (TActorIterator<AHexMapGeneralActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AHexMapGeneralActor actor found!"));
+		AHexMapGeneralActor* HexMapGeneralActor = *ActorItr;
+		HexMapGeneralActor->OnHexMapChunkActorChangedLocation();
+	}
+}
+
 
 
