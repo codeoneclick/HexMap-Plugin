@@ -4,6 +4,8 @@
 #include "HexMap.h"
 #include "HexMapTileMeshesComponent.h"
 #include "HexMapGrid.h"
+#include "HexMapTileComponent.h"
+#include "HexMapTileMeshComponent.h"
 
 // Sets default values for this component's properties
 UHexMapTileMeshesComponent::UHexMapTileMeshesComponent()
@@ -34,14 +36,11 @@ void UHexMapTileMeshesComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	// ...
 }
 
-#ifdef ENABLED
-
 void UHexMapTileMeshesComponent::PostEditChangeProperty(struct FPropertyChangedEvent& Event)
 {
 	FName PropertyName = (Event.Property != NULL) ? Event.Property->GetFName() : NAME_None;
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(UHexMapTileMeshesComponent, HexMapTileMesh_01))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HexMapTileMesh_01 property changed!"))
 		OnHexMapTileMeshesChanged();
 	}
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(UHexMapTileMeshesComponent, HexMapTileMesh_02))
@@ -59,25 +58,26 @@ void UHexMapTileMeshesComponent::PostEditChangeProperty(struct FPropertyChangedE
 	Super::PostEditChangeProperty(Event);
 }
 
-#endif
-
 void UHexMapTileMeshesComponent::OnHexMapTileMeshesChanged()
 {
-	AHexMapGrid* HexMapGrid = static_cast<AHexMapGrid *>(GetOwner());
+	/*AHexMapGrid* HexMapGrid = static_cast<AHexMapGrid *>(GetOwner());
 	TArray<USceneComponent *> TilesComponents;
 
-	TArray<UChildActorComponent*> Tiles = HexMapGrid->Tiles;
+	TArray<UHexMapTileComponent*> Tiles = HexMapGrid->Tiles;
 	for (int TileIndex = 0; TileIndex < Tiles.Num(); ++TileIndex)
 	{
-		UChildActorComponent* Tile = Tiles[TileIndex];
-		Tile->GetChildrenComponents(true, TilesComponents);
-
-		UStaticMeshComponent* StaticMeshComponent = nullptr;
-		if (TilesComponents.FindItemByClass(&StaticMeshComponent))
+		USceneComponent* Tile = Tiles[TileIndex];
+		if (Tile)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("HexMapTile StaticMeshComponent found!"))
-			StaticMeshComponent->SetStaticMesh(HexMapTileMesh_01);
+			Tile->GetChildrenComponents(true, TilesComponents);
+
+			UHexMapTileMeshComponent* HexMapTileMeshComponent = nullptr;
+			if (TilesComponents.FindItemByClass(&HexMapTileMeshComponent))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("HexMapTileMeshComponent found!"))
+					HexMapTileMeshComponent->SetStaticMesh(HexMapTileMesh_01);
+			}
 		}
-	}
+	}*/
 }
 

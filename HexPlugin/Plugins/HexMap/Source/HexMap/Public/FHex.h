@@ -15,12 +15,12 @@
 /**
  * 
  */
-class HEXMAP_API FHexMapUtility
+class HEXMAP_API FHex
 {
 public:
 
-	FHexMapUtility();
-	~FHexMapUtility();
+	FHex();
+	~FHex();
 
 	struct Point
 	{

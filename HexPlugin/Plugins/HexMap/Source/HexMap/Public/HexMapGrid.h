@@ -16,25 +16,42 @@ public:
 	AHexMapGrid();
 
 protected:
+
+	bool bIsCreated = false;
+
 	// Called when the game starts or when spawned
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& Event) override;
+
+	void CreateTiles();
+	void DestroyTiles();
+
+	void OnHexMapTileMeshesChanged();
+	int32 GetObjReferenceCount(UObject* Obj, TArray<UObject*>* OutReferredToObjects = nullptr);
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleDefaultsOnly)
-	class UChildActorComponent* TilesContainer;
+	//UPROPERTY(VisibleDefaultsOnly)
+	//class UChildActorComponent* TilesContainer;
 
-	UPROPERTY(VisibleDefaultsOnly)
-	class UChildActorComponent* Tile_01;
-	
-	UPROPERTY(VisibleDefaultsOnly)
-	class UChildActorComponent* Tile_02;
+	//UPROPERTY(EditAnywhere)
+	//class UHexMapTileMeshesComponent* HexMapTileMeshesComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UHexMapComponent* Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = 0, ClampMax = 32, NoSpinbox))
+	int MapRadius = 3;
 
 	UPROPERTY(EditAnywhere)
-	class UHexMapTileMeshesComponent* HexMapTileMeshesComponent;
+	int TileWidth = 32;
 
 	UPROPERTY(EditAnywhere)
-	TArray<UChildActorComponent*> Tiles;
+	int TileHeight = 32;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UStaticMesh* HexMapTileMesh;
 };
