@@ -32,7 +32,8 @@ void AHexMapTileObjectActor::EditorApplyTranslation(const FVector & DeltaTransla
 		AHexMapGeneralActor* HexMapGeneralActor = *ActorItr;
 		FVector MoveDirection = DeltaTranslation;
 		MoveDirection.Normalize();
-		MoveDirection *= 32.f * 1.5f;
+		MoveDirection.X *= HexMapGeneralActor->TileWidth * 1.5f;
+		MoveDirection.Y *= HexMapGeneralActor->TileHeight * 1.5f;
 		FVector CurrentPosition = GetActorLocation();
 		FVector PredictedPosition = CurrentPosition + MoveDirection;
 		TArray<FVector> HexMapChunkTilePositions = HexMapGeneralActor->HexMapChunkTilePositions;
@@ -47,7 +48,7 @@ void AHexMapTileObjectActor::EditorApplyTranslation(const FVector & DeltaTransla
 				NearestHexMapChunkTilePosition = HexMapChunkTilePositions[HexMapChunkTilePositionIndex];
 			}
 		}
-		if (NearestDistance < 32.f * 1.5f)
+		if (NearestDistance < (HexMapGeneralActor->TileWidth + HexMapGeneralActor->TileHeight) * .5f * 1.5f)
 		{
 			Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
 		}

@@ -16,6 +16,9 @@ AHexMapChunkActor::AHexMapChunkActor()
 
 	HexMapComponent = CreateDefaultSubobject<UHexMapComponent>(TEXT("HexMapChunkRoot"));
 	RootComponent = HexMapComponent;
+
+	TileWidth = AHexMapGeneralActor::k_InitialTileWidth;
+	TileHeight = AHexMapGeneralActor::k_InitialTileHeight;
 }
 
 void AHexMapChunkActor::BeginPlay()
@@ -55,11 +58,6 @@ void AHexMapChunkActor::PostEditChangeProperty(struct FPropertyChangedEvent& Eve
 	{
 		AHexMapChunkActor::OnHexMapTileMeshChanged();
 	}
-	else if (PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapChunkActor, TileWidth) ||
-		PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapChunkActor, TileHeight))
-	{
-		AHexMapChunkActor::OnHexMapTileSizeChanged();
-	}
 }
 
 void AHexMapChunkActor::CreateTiles()
@@ -81,17 +79,22 @@ void AHexMapChunkActor::CreateTiles()
 			FHex::Point Position = FHex::HexToPixel(HexMapLayout, HexPosition);
 
 			UHexMapTileComponent* HexMapTileComponent = NewObject<UHexMapTileComponent>(this);
-			HexMapTileComponent->RegisterComponent();
-			HexMapTileComponent->AttachToComponent(GetRootComponent(), AttachmentRules);
+			HexMapTileComponent->SetupAttachment(GetRootComponent());
 			HexMapTileComponent->SetRelativeLocation(FVector(Position.x, Position.y, 0.f));
+			HexMapTileComponent->RegisterComponent();
 
 			UHexMapTileMeshComponent* HexMapTileMeshComponent = NewObject<UHexMapTileMeshComponent>(this);
+			HexMapTileMeshComponent->SetupAttachment(HexMapTileComponent);
 			HexMapTileMeshComponent->RegisterComponent();
-			HexMapTileMeshComponent->AttachToComponent(HexMapTileComponent, AttachmentRules);
 
 			HexMapTileComponent->HexMapTileMeshComponent = HexMapTileMeshComponent;
 
 			HexMapComponent->HexMapTilesComponents.Add(HexMapTileComponent);
+
+			FVector Location(0.0f, 0.0f, 0.0f);
+			FRotator Rotation(0.0f, 0.0f, 0.0f);
+			FActorSpawnParameters SpawnInfo;
+			//GetWorld()->SpawnActor<AProjectile>(Location, Rotation, SpawnInfo);
 		}
 	}
 	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();

@@ -29,9 +29,6 @@ protected:
 	void CreateTiles();
 	void DestroyTiles();
 
-	void OnHexMapTileMeshChanged();
-	void OnHexMapTileSizeChanged();
-
 	void OnHexMapChunkActorChangedLocation();
 
 public:	
@@ -44,12 +41,15 @@ public:
 	UPROPERTY(EditAnywhere, meta = (ClampMin = 0, ClampMax = 8))
 	int MapRadius = 2;
 
-	UPROPERTY(EditAnywhere)
-	int TileWidth = 32;
+	UPROPERTY(VisibleAnywhere)
+	int TileWidth;
 
-	UPROPERTY(EditAnywhere)
-	int TileHeight = 32;
+	UPROPERTY(VisibleAnywhere)
+	int TileHeight;
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMesh* HexMapTileMesh;
+
+	void OnHexMapTileMeshChanged();
+	void OnHexMapTileSizeChanged();
 };

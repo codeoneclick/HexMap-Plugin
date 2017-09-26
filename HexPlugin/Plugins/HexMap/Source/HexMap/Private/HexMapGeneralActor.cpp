@@ -26,6 +26,17 @@ void AHexMapGeneralActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AHexMapGeneralActor::PostEditChangeProperty(struct FPropertyChangedEvent& Event)
+{
+	Super::PostEditChangeProperty(Event);
+	FName PropertyName = (Event.Property != NULL) ? Event.Property->GetFName() : NAME_None;
+	 if (PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapGeneralActor, TileWidth) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapGeneralActor, TileHeight))
+	{
+		AHexMapGeneralActor::OnHexMapTileSizeChanged();
+	}
+}
+
 void AHexMapGeneralActor::OnHexMapChunkActorChangedLocation()
 {
 	HexMapChunkTilePositions.Empty();
@@ -56,4 +67,15 @@ void AHexMapGeneralActor::EditorApplyRotation(const FRotator & DeltaRotation, bo
 {
 	Super::EditorApplyRotation(DeltaRotation, bAltDown, bShiftDown, bCtrlDown);
 	AHexMapGeneralActor::OnHexMapChunkActorChangedLocation();
+}
+
+void AHexMapGeneralActor::OnHexMapTileSizeChanged()
+{
+	for (TActorIterator<AHexMapChunkActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		AHexMapChunkActor* HexMapGeneralActor = *ActorItr;
+		HexMapGeneralActor->TileWidth = TileWidth;
+		HexMapGeneralActor->TileHeight = TileHeight;
+		HexMapGeneralActor->OnHexMapTileSizeChanged();
+	}
 }
