@@ -14,13 +14,15 @@ protected:
 	/** FEdMode: Called when a mouse button is released */
 	virtual bool EndTracking(FEditorViewportClient* InViewportClient, FViewport* InViewport) override;
 
+	virtual bool UsesToolkits() const override;
+
 public:
 
-	/** Constructor */
 	FHexMapEdMode();
-
-	/** Destructor */
 	virtual ~FHexMapEdMode();
+
+	virtual void Enter() override;
+	virtual void Exit() override;
 
 	static FEditorModeID EM_HexMap;
 };

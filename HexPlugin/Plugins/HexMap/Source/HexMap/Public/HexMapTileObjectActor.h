@@ -26,5 +26,7 @@ public:
 
 	void OnEditorMousePressed();
 	void OnEditorMouseReleased();
-	
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* GeometryComponent = nullptr;
 };

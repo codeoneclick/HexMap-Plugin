@@ -8,6 +8,7 @@
 #include "HexMapTileMeshComponent.h"
 #include "HexMapTile.h"
 #include "HexMapGeneralActor.h"
+#include "HexMapTileObjectActor.h"
 
 AHexMapChunkActor::AHexMapChunkActor()
 {
@@ -39,6 +40,7 @@ void AHexMapChunkActor::OnConstruction(const FTransform& Transform)
 		AHexMapChunkActor::DestroyTiles();
 		AHexMapChunkActor::CreateTiles();
 		AHexMapChunkActor::OnHexMapTileMeshChanged();
+		AHexMapChunkActor::OnHexMapTileMaterialChanged();
 		bIsCreated = true;
 	}
 }
@@ -53,10 +55,15 @@ void AHexMapChunkActor::PostEditChangeProperty(struct FPropertyChangedEvent& Eve
 		AHexMapChunkActor::DestroyTiles();
 		AHexMapChunkActor::CreateTiles();
 		AHexMapChunkActor::OnHexMapTileMeshChanged();
+		AHexMapChunkActor::OnHexMapTileMaterialChanged();
 	}
 	else if (PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapChunkActor, HexMapTileMesh))
 	{
 		AHexMapChunkActor::OnHexMapTileMeshChanged();
+	}
+	else if (PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapChunkActor, HexMapTileMaterial))
+	{
+		AHexMapChunkActor::OnHexMapTileMaterialChanged();
 	}
 }
 
@@ -91,10 +98,13 @@ void AHexMapChunkActor::CreateTiles()
 
 			HexMapComponent->HexMapTilesComponents.Add(HexMapTileComponent);
 
-			FVector Location(0.0f, 0.0f, 0.0f);
+			/*FVector Location(Position.x, Position.y, 0.f);
 			FRotator Rotation(0.0f, 0.0f, 0.0f);
 			FActorSpawnParameters SpawnInfo;
-			//GetWorld()->SpawnActor<AProjectile>(Location, Rotation, SpawnInfo);
+			AHexMapTileObjectActor* HexMapTileObjectActor = GetWorld()->SpawnActor<AHexMapTileObjectActor>(Location, Rotation, SpawnInfo);
+			UStaticMeshComponent* StaticMeshComponent = NewObject<UStaticMeshComponent>(HexMapTileObjectActor);
+			HexMapTileObjectActor->SetRootComponent(StaticMeshComponent);
+			HexMapTileObjectActor->GeometryComponent = StaticMeshComponent;*/
 		}
 	}
 	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();
@@ -143,8 +153,27 @@ void AHexMapChunkActor::OnHexMapTileMeshChanged()
 			UHexMapTileMeshComponent* HexMapTileMeshComponent = nullptr;
 			if (ComponentsInTile.FindItemByClass(&HexMapTileMeshComponent))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("HexMapTileMeshComponent found!"))
-					HexMapTileMeshComponent->SetStaticMesh(HexMapTileMesh);
+				HexMapTileMeshComponent->SetStaticMesh(HexMapTileMesh);
+			}
+		}
+	}
+}
+
+void AHexMapChunkActor::OnHexMapTileMaterialChanged()
+{
+	TArray<USceneComponent*> ComponentsInRoot;
+	GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
+	for (int ComponentInRootIndex = 0; ComponentInRootIndex < ComponentsInRoot.Num(); ++ComponentInRootIndex)
+	{
+		auto ComponentInRoot = ComponentsInRoot[ComponentInRootIndex];
+		if (ComponentInRoot->IsA(UHexMapTileComponent::StaticClass()))
+		{
+			TArray<USceneComponent *> ComponentsInTile;
+			ComponentInRoot->GetChildrenComponents(false, ComponentsInTile);
+			UHexMapTileMeshComponent* HexMapTileMeshComponent = nullptr;
+			if (ComponentsInTile.FindItemByClass(&HexMapTileMeshComponent))
+			{
+				HexMapTileMeshComponent->SetMaterial(0, HexMapTileMaterial);
 			}
 		}
 	}

@@ -50,6 +50,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMesh* HexMapTileMesh;
 
+	UPROPERTY(EditAnywhere)
+	class UMaterial* HexMapTileMaterial;
+
 	void OnHexMapTileMeshChanged();
+	void OnHexMapTileMaterialChanged();
 	void OnHexMapTileSizeChanged();
 };
