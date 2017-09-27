@@ -30,10 +30,14 @@ void AHexMapGeneralActor::PostEditChangeProperty(struct FPropertyChangedEvent& E
 {
 	Super::PostEditChangeProperty(Event);
 	FName PropertyName = (Event.Property != NULL) ? Event.Property->GetFName() : NAME_None;
-	 if (PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapGeneralActor, TileWidth) ||
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapGeneralActor, TileWidth) ||
 		PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapGeneralActor, TileHeight))
 	{
 		AHexMapGeneralActor::OnHexMapTileSizeChanged();
+	}
+	else if (PropertyName == GET_MEMBER_NAME_CHECKED(AHexMapGeneralActor, HexMapChunkActors))
+	{
+		AHexMapGeneralActor::OnHexMapChunkAttachesChanged();
 	}
 }
 
@@ -52,9 +56,15 @@ void AHexMapGeneralActor::OnHexMapChunkActorChangedLocation()
 			{
 				FVector Position = ComponentInRoot->GetComponentLocation();
 				HexMapChunkTilePositions.Add(Position);
+				HexMapChunkActorToPositionLinkage.Add(Position, HexMapChunkActor);
 			}
 		}
 	}
+}
+
+void AHexMapGeneralActor::OnHexMapChunkAttachesChanged()
+{
+	AHexMapGeneralActor::OnHexMapChunkActorChangedLocation();
 }
 
 void AHexMapGeneralActor::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)

@@ -5,6 +5,8 @@
 #include "FHexMapEdToolkit.h"
 #include "FHexMapEdMode.h"
 #include "Editor/UnrealEd/Public/EditorModeManager.h"
+#include "HexMapChunkActor.h"
+#include "HexMapGeneralActor.h"
 
 #define LOCTEXT_NAMESPACE "FHexMapEdToolkit"
 
@@ -17,23 +19,74 @@ FHexMapEdToolkit::FHexMapEdToolkit()
 			return true;
 		}
 
-		static FReply OnButtonClick(FVector InOffset)
+		static FReply OnHexMapFillButtonClick()
 		{
+			if (EAppReturnType::Yes == FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("HexMapTilesFillMessage", "All previous attached tiles will be removed. Are you sure?")))
+			{
+				
+			}
 			return FReply::Handled();
 		}
 
-		static TSharedRef<SWidget> MakeButton(FText InLabel, const FVector InOffset)
+		static FReply OnAttachHexMapChunksToGeneralButtonClick()
+		{
+			FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::KeepWorld, false);
+			UWorld* World = GEditor->GetEditorWorldContext().World();
+			for (TActorIterator<AHexMapGeneralActor> HexMapGeneralActorItr(World); HexMapGeneralActorItr; ++HexMapGeneralActorItr)
+			{
+				AHexMapGeneralActor* HexMapGeneralActor = *HexMapGeneralActorItr;
+				TArray<AHexMapChunkActor *> HexMapChunkActors;
+				for (TActorIterator<AHexMapChunkActor> HexMapChunkActorItr(World); HexMapChunkActorItr; ++HexMapChunkActorItr)
+				{
+					AHexMapChunkActor* HexMapChunkActor = *HexMapChunkActorItr;
+					if (!HexMapChunkActor->IsAttachedTo(HexMapGeneralActor))
+					{
+						HexMapChunkActor->AttachToActor(HexMapGeneralActor, AttachmentTransformRules);
+					}
+					HexMapChunkActors.Add(HexMapChunkActor);
+				}
+				HexMapGeneralActor->HexMapChunkActors = HexMapChunkActors;
+				HexMapGeneralActor->OnHexMapChunkAttachesChanged();
+				break;
+			}
+			return FReply::Handled();
+		}
+
+		static FReply OnHexMapTilesRefreshPositionsButtonClick()
+		{
+			UWorld* World = GEditor->GetEditorWorldContext().World();
+			for (TActorIterator<AHexMapGeneralActor> HexMapGeneralActorItr(World); HexMapGeneralActorItr; ++HexMapGeneralActorItr)
+			{
+				AHexMapGeneralActor* HexMapGeneralActor = *HexMapGeneralActorItr;
+				HexMapGeneralActor->OnHexMapChunkActorChangedLocation();
+			}
+			return FReply::Handled();
+		}
+
+		static TSharedRef<SWidget> MakeAttachHexMapChunksToGeneralButton(FText Label)
 		{
 			return SNew(SButton)
-				.Text(InLabel)
-				.OnClicked_Static(&Locals::OnButtonClick, InOffset);
+				.Text(Label)
+				.OnClicked_Static(&Locals::OnAttachHexMapChunksToGeneralButtonClick);
+		}
+
+		static TSharedRef<SWidget> MakeHexMapTilesRefreshPositionsButton(FText Label)
+		{
+			return SNew(SButton)
+				.Text(Label)
+				.OnClicked_Static(&Locals::OnHexMapTilesRefreshPositionsButtonClick);
+		}
+
+		static TSharedRef<SWidget> MakeHexMapFillButton(FText Label)
+		{
+			return SNew(SButton)
+				.Text(Label)
+				.OnClicked_Static(&Locals::OnHexMapFillButtonClick);
 		}
 	};
 
-	const float Factor = 256.0f;
-
 	SAssignNew(ToolkitWidget, SBorder)
-		.HAlign(HAlign_Center)
+		.HAlign(HAlign_Left)
 		.Padding(25)
 		.IsEnabled_Static(&Locals::IsWidgetEnabled)
 		[
@@ -45,35 +98,25 @@ FHexMapEdToolkit::FHexMapEdToolkit()
 		[
 			SNew(STextBlock)
 			.AutoWrapText(true)
-		.Text(LOCTEXT("HelperLabel", "Select some actors and move 231231 them around using buttons below"))
+		.Text(LOCTEXT("HelperLabel", ""))
 		]
 	+ SVerticalBox::Slot()
-		.HAlign(HAlign_Center)
+		.HAlign(HAlign_Fill)
 		.AutoHeight()
 		[
-			Locals::MakeButton(LOCTEXT("UpButtonLabel", "Up"), FVector(0, 0, Factor))
+			Locals::MakeAttachHexMapChunksToGeneralButton(LOCTEXT("AttachHexMapChunksToGeneral", "Attach HexMap Chunks To General"))
 		]
 	+ SVerticalBox::Slot()
-		.HAlign(HAlign_Center)
+		.HAlign(HAlign_Fill)
 		.AutoHeight()
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-		.AutoWidth()
-		[
-			Locals::MakeButton(LOCTEXT("LeftButtonLabel", "Left"), FVector(0, -Factor, 0))
-		]
-	+ SHorizontalBox::Slot()
-		.AutoWidth()
-		[
-			Locals::MakeButton(LOCTEXT("RightButtonLabel", "Right"), FVector(0, Factor, 0))
-		]
+			Locals::MakeHexMapTilesRefreshPositionsButton(LOCTEXT("HexMapTilesRefreshPositions", "Refresh Tiles Positions"))
 		]
 	+ SVerticalBox::Slot()
-		.HAlign(HAlign_Center)
+		.HAlign(HAlign_Fill)
 		.AutoHeight()
 		[
-			Locals::MakeButton(LOCTEXT("DownButtonLabel", "Down"), FVector(0, 0, -Factor))
+			Locals::MakeHexMapFillButton(LOCTEXT("HexMapTilesFill", "Fill HexMap"))
 		]
 
 		];

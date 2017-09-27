@@ -38,6 +38,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TArray<FVector> HexMapChunkTilePositions;
 
+	UPROPERTY(VisibleAnywhere)
+	TMap<FVector, AHexMapChunkActor*> HexMapChunkActorToPositionLinkage;
+
 	UPROPERTY(EditAnywhere)
 	int TileWidth = k_InitialTileWidth;
 
@@ -45,4 +48,5 @@ public:
 	int TileHeight = k_InitialTileHeight;
 	
 	void OnHexMapChunkActorChangedLocation();
+	void OnHexMapChunkAttachesChanged();
 };

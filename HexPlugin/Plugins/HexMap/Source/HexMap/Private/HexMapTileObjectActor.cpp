@@ -4,12 +4,17 @@
 #include "HexMap.h"
 #include "HexMapTileObjectActor.h"
 #include "HexMapGeneralActor.h"
+#include "HexMapChunkActor.h"
 
 // Sets default values
 AHexMapTileObjectActor::AHexMapTileObjectActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	GeometryComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Geometry"));
+	const ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("StaticMesh'/Game/HexTileObject_01.HexTileObject_01'"));
+	GeometryComponent->SetStaticMesh(Mesh.Object);
+	RootComponent = GeometryComponent;
 }
 
 // Called when the game starts or when spawned
@@ -79,6 +84,15 @@ void AHexMapTileObjectActor::OnEditorMouseReleased()
 				NearestDistance = CurrentDistance;
 				NearestHexMapChunkTilePosition = HexMapChunkTilePositions[HexMapChunkTilePositionIndex];
 			}
+		}
+		auto HexMapChunkActorItr = HexMapGeneralActor->HexMapChunkActorToPositionLinkage.Find(NearestHexMapChunkTilePosition);
+		AHexMapChunkActor* HexMapChunkActor = *HexMapChunkActorItr;
+		if (!IsAttachedTo(HexMapChunkActor))
+		{
+			FDetachmentTransformRules DetachmentTransformRules = FDetachmentTransformRules(EDetachmentRule::KeepWorld, false);
+			DetachFromActor(DetachmentTransformRules);
+			FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::KeepWorld, false);
+			AttachToActor(HexMapChunkActor, AttachmentTransformRules);
 		}
 		SetActorLocation(NearestHexMapChunkTilePosition);
 	}
