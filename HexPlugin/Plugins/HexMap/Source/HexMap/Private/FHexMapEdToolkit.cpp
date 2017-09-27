@@ -7,6 +7,7 @@
 #include "Editor/UnrealEd/Public/EditorModeManager.h"
 #include "HexMapChunkActor.h"
 #include "HexMapGeneralActor.h"
+#include "HexMapTileObjectActor.h"
 
 #define LOCTEXT_NAMESPACE "FHexMapEdToolkit"
 
@@ -23,7 +24,27 @@ FHexMapEdToolkit::FHexMapEdToolkit()
 		{
 			if (EAppReturnType::Yes == FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("HexMapTilesFillMessage", "All previous attached tiles will be removed. Are you sure?")))
 			{
-				
+				FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::KeepWorld, false);
+				UWorld* World = GEditor->GetEditorWorldContext().World();
+				for (TActorIterator<AHexMapTileObjectActor> HexMapTileObjectActorItr(World); HexMapTileObjectActorItr; ++HexMapTileObjectActorItr)
+				{
+					AHexMapTileObjectActor* HexMapTileObjectActor = *HexMapTileObjectActorItr;
+					HexMapTileObjectActor->Destroy();
+				}
+				for (TActorIterator<AHexMapGeneralActor> HexMapGeneralActorItr(World); HexMapGeneralActorItr; ++HexMapGeneralActorItr)
+				{
+					AHexMapGeneralActor* HexMapGeneralActor = *HexMapGeneralActorItr;
+					auto HexMapChunkActorToPositionLinkages = HexMapGeneralActor->HexMapChunkActorToPositionLinkage;
+					for (auto HexMapChunkActorToPositionLinkage : HexMapChunkActorToPositionLinkages)
+					{
+						FVector Location = HexMapChunkActorToPositionLinkage.Key;
+						FRotator Rotation(0.0f, 0.0f, 0.0f);
+						FActorSpawnParameters SpawnInfo;
+						AHexMapTileObjectActor* HexMapTileObjectActor = World->SpawnActor<AHexMapTileObjectActor>(Location, Rotation, SpawnInfo);
+						HexMapTileObjectActor->AttachToActor(HexMapChunkActorToPositionLinkage.Value, AttachmentTransformRules);
+					}
+					break;
+				}
 			}
 			return FReply::Handled();
 		}

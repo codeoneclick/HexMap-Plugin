@@ -86,13 +86,16 @@ void AHexMapTileObjectActor::OnEditorMouseReleased()
 			}
 		}
 		auto HexMapChunkActorItr = HexMapGeneralActor->HexMapChunkActorToPositionLinkage.Find(NearestHexMapChunkTilePosition);
-		AHexMapChunkActor* HexMapChunkActor = *HexMapChunkActorItr;
-		if (!IsAttachedTo(HexMapChunkActor))
+		if (HexMapChunkActorItr)
 		{
-			FDetachmentTransformRules DetachmentTransformRules = FDetachmentTransformRules(EDetachmentRule::KeepWorld, false);
-			DetachFromActor(DetachmentTransformRules);
-			FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::KeepWorld, false);
-			AttachToActor(HexMapChunkActor, AttachmentTransformRules);
+			AHexMapChunkActor* HexMapChunkActor = *HexMapChunkActorItr;
+			if (!IsAttachedTo(HexMapChunkActor))
+			{
+				FDetachmentTransformRules DetachmentTransformRules = FDetachmentTransformRules(EDetachmentRule::KeepWorld, false);
+				DetachFromActor(DetachmentTransformRules);
+				FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::KeepWorld, false);
+				AttachToActor(HexMapChunkActor, AttachmentTransformRules);
+			}
 		}
 		SetActorLocation(NearestHexMapChunkTilePosition);
 	}
