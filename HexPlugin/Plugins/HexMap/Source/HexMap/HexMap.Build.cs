@@ -1,6 +1,6 @@
 using UnrealBuildTool;
 using System.IO;
- 
+
 public class HexMap : ModuleRules
 {
     public HexMap(TargetInfo Target)
@@ -20,6 +20,7 @@ public class HexMap : ModuleRules
             "Core",
             "CoreUObject",
             "Engine",
+            "RenderCore",
             "Slate",
             "EditorStyle",
             "UnrealEd"
@@ -30,6 +31,8 @@ public class HexMap : ModuleRules
             "InputCore",
             "SlateCore",
             "RenderCore",
+            "ShaderCore",
+            "RHI",
             "PropertyEditor",
             "WorkspaceMenuStructure",
             "LevelEditor",

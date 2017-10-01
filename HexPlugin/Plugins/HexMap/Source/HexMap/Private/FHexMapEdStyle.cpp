@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HexMapPrivatePCH.h"
+
+#if WITH_EDITOR
+
 #include "HexMap.h"
 #include "FHexMapEdStyle.h"
 #include "SlateStyle.h"
@@ -59,3 +62,5 @@ void FHexMapEdStyle::Shutdown()
 		StyleSet.Reset();
 	}
 }
+
+#endif

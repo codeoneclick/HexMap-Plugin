@@ -6,9 +6,9 @@
 #include "HexMapComponent.h"
 #include "HexMapTileComponent.h"
 #include "HexMapTileMeshComponent.h"
-#include "HexMapTile.h"
 #include "HexMapGeneralActor.h"
 #include "HexMapTileObjectActor.h"
+#include "FreeformMeshComponent.h"
 
 AHexMapChunkActor::AHexMapChunkActor()
 {
@@ -42,8 +42,52 @@ void AHexMapChunkActor::OnConstruction(const FTransform& Transform)
 		AHexMapChunkActor::OnHexMapTileMeshChanged();
 		AHexMapChunkActor::OnHexMapTileMaterialChanged();
 		bIsCreated = true;
+
+		Geometry = NewObject<UFreeformMeshComponent>(this);
+		TArray<FFreeformMeshTriangle> Triangles;
+
+		FVector HexTileCenter = FVector(0.f);
+		int32 NumSubdivisions = 6;
+		TArray<FVector> HexTileVertices;
+		TArray<FVector2D> HexTileTexcoords;
+		for (float Angle = 0.f; Angle <= M_PI * 2.f; Angle += ((M_PI * 2) / NumSubdivisions))
+		{
+			HexTileVertices.Add(FVector(100.f * cosf(Angle), 100.f * sinf(Angle), 0.f));
+			HexTileTexcoords.Add(FVector2D((cosf(Angle) + 1.f) * .5f, (sinf(Angle) + 1.f) * .5f));
+		}
+
+		FFreeformMeshTriangle Triangle;
+		Triangle.Vertices.SetNum(3);
+		int32 HexTileVerticesIndex = 0;
+		for (int32 i = 0; i < NumSubdivisions; ++i)
+		{
+			Triangle.Vertices[0].Position = HexTileCenter;
+			Triangle.Vertices[0].U = .5f;
+			Triangle.Vertices[0].V = .5f;
+			HexTileVerticesIndex++;
+			Triangle.Vertices[1].Position = HexTileVertices[HexTileVerticesIndex];
+			Triangle.Vertices[1].U = HexTileTexcoords[HexTileVerticesIndex].X;
+			Triangle.Vertices[1].V = HexTileTexcoords[HexTileVerticesIndex].Y;
+			if (HexTileVerticesIndex >= HexTileVertices.Num())
+			{
+				HexTileVerticesIndex = 0;
+			}
+			HexTileVerticesIndex--;
+			Triangle.Vertices[2].Position = HexTileVertices[HexTileVerticesIndex];
+			Triangle.Vertices[2].U = HexTileTexcoords[HexTileVerticesIndex].X;
+			Triangle.Vertices[2].V = HexTileTexcoords[HexTileVerticesIndex].Y;
+			HexTileVerticesIndex++;
+			
+			Triangles.Add(Triangle);
+		}
+
+		Geometry->SetTriangles(Triangles);
+		Geometry->SetupAttachment(GetRootComponent());
+		Geometry->RegisterComponent();
 	}
 }
+
+#if WITH_EDITOR
 
 void AHexMapChunkActor::PostEditChangeProperty(struct FPropertyChangedEvent& Event)
 {
@@ -66,6 +110,8 @@ void AHexMapChunkActor::PostEditChangeProperty(struct FPropertyChangedEvent& Eve
 		AHexMapChunkActor::OnHexMapTileMaterialChanged();
 	}
 }
+
+#endif
 
 void AHexMapChunkActor::CreateTiles()
 {
@@ -97,14 +143,6 @@ void AHexMapChunkActor::CreateTiles()
 			HexMapTileComponent->HexMapTileMeshComponent = HexMapTileMeshComponent;
 
 			HexMapComponent->HexMapTilesComponents.Add(HexMapTileComponent);
-
-			/*FVector Location(Position.x, Position.y, 0.f);
-			FRotator Rotation(0.0f, 0.0f, 0.0f);
-			FActorSpawnParameters SpawnInfo;
-			AHexMapTileObjectActor* HexMapTileObjectActor = GetWorld()->SpawnActor<AHexMapTileObjectActor>(Location, Rotation, SpawnInfo);
-			UStaticMeshComponent* StaticMeshComponent = NewObject<UStaticMeshComponent>(HexMapTileObjectActor);
-			HexMapTileObjectActor->SetRootComponent(StaticMeshComponent);
-			HexMapTileObjectActor->GeometryComponent = StaticMeshComponent;*/
 		}
 	}
 	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();
@@ -202,6 +240,8 @@ void AHexMapChunkActor::OnHexMapTileSizeChanged()
 	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();
 }
 
+#if WITH_EDITOR
+
 void AHexMapChunkActor::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
 {
 	Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
@@ -213,6 +253,8 @@ void AHexMapChunkActor::EditorApplyRotation(const FRotator & DeltaRotation, bool
 	Super::EditorApplyRotation(DeltaRotation, bAltDown, bShiftDown, bCtrlDown);
 	AHexMapChunkActor::OnHexMapChunkActorChangedLocation();
 }
+
+#endif
 
 void AHexMapChunkActor::OnHexMapChunkActorChangedLocation()
 {

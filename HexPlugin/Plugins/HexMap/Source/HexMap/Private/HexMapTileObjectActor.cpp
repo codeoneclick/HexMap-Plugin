@@ -29,6 +29,8 @@ void AHexMapTileObjectActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+#if WITH_EDITOR
+
 void AHexMapTileObjectActor::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
 {
 	for (TActorIterator<AHexMapGeneralActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
@@ -60,6 +62,8 @@ void AHexMapTileObjectActor::EditorApplyTranslation(const FVector & DeltaTransla
 	}
 	UE_LOG(LogTemp, Warning, TEXT("AHexMapTileObjectActor translated in editor!"));
 }
+
+#endif
 
 void AHexMapTileObjectActor::OnEditorMousePressed()
 {

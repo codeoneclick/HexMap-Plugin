@@ -26,6 +26,8 @@ void AHexMapGeneralActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+#if WITH_EDITOR
+
 void AHexMapGeneralActor::PostEditChangeProperty(struct FPropertyChangedEvent& Event)
 {
 	Super::PostEditChangeProperty(Event);
@@ -41,9 +43,12 @@ void AHexMapGeneralActor::PostEditChangeProperty(struct FPropertyChangedEvent& E
 	}
 }
 
+#endif
+
 void AHexMapGeneralActor::OnHexMapChunkActorChangedLocation()
 {
 	HexMapChunkTilePositions.Empty();
+	HexMapChunkActorToPositionLinkage.Empty();
 	for (int HexMapChunkActorIndex = 0; HexMapChunkActorIndex < HexMapChunkActors.Num(); ++HexMapChunkActorIndex)
 	{
 		AHexMapChunkActor* HexMapChunkActor = HexMapChunkActors[HexMapChunkActorIndex];
@@ -67,6 +72,8 @@ void AHexMapGeneralActor::OnHexMapChunkAttachesChanged()
 	AHexMapGeneralActor::OnHexMapChunkActorChangedLocation();
 }
 
+#if WITH_EDITOR
+
 void AHexMapGeneralActor::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
 {
 	Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
@@ -78,6 +85,8 @@ void AHexMapGeneralActor::EditorApplyRotation(const FRotator & DeltaRotation, bo
 	Super::EditorApplyRotation(DeltaRotation, bAltDown, bShiftDown, bCtrlDown);
 	AHexMapGeneralActor::OnHexMapChunkActorChangedLocation();
 }
+
+#endif
 
 void AHexMapGeneralActor::OnHexMapTileSizeChanged()
 {

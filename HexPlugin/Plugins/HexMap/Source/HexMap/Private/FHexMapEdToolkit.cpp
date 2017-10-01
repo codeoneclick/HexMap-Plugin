@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HexMapPrivatePCH.h"
+
+#if WITH_EDITOR
+
 #include "HexMap.h"
 #include "FHexMapEdToolkit.h"
 #include "FHexMapEdMode.h"
@@ -8,6 +11,7 @@
 #include "HexMapChunkActor.h"
 #include "HexMapGeneralActor.h"
 #include "HexMapTileObjectActor.h"
+#include "AI/Navigation/NavMeshBoundsVolume.h"
 
 #define LOCTEXT_NAMESPACE "FHexMapEdToolkit"
 
@@ -18,6 +22,21 @@ FHexMapEdToolkit::FHexMapEdToolkit()
 		static bool IsWidgetEnabled()
 		{
 			return true;
+		}
+
+		static FReply OnHexMapClearButtonClick()
+		{
+			if (EAppReturnType::Yes == FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("HexMapTilesFillMessage", "All previous attached tiles will be removed. Are you sure?")))
+			{
+				FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::KeepWorld, false);
+				UWorld* World = GEditor->GetEditorWorldContext().World();
+				for (TActorIterator<AHexMapTileObjectActor> HexMapTileObjectActorItr(World); HexMapTileObjectActorItr; ++HexMapTileObjectActorItr)
+				{
+					AHexMapTileObjectActor* HexMapTileObjectActor = *HexMapTileObjectActorItr;
+					HexMapTileObjectActor->Destroy();
+				}
+			}
+			return FReply::Handled();
 		}
 
 		static FReply OnHexMapFillButtonClick()
@@ -43,6 +62,15 @@ FHexMapEdToolkit::FHexMapEdToolkit()
 						AHexMapTileObjectActor* HexMapTileObjectActor = World->SpawnActor<AHexMapTileObjectActor>(Location, Rotation, SpawnInfo);
 						HexMapTileObjectActor->AttachToActor(HexMapChunkActorToPositionLinkage.Value, AttachmentTransformRules);
 					}
+					for (TActorIterator<ANavMeshBoundsVolume> HexMapNavigationMeshVolumeItr(World); HexMapNavigationMeshVolumeItr; ++HexMapNavigationMeshVolumeItr)
+					{
+						//ANavMeshBoundsVolume* HexMapNavigationMeshVolume = *HexMapNavigationMeshVolumeItr;
+						//HexMapNavigationMeshVolume->AttachToActor();
+					}
+					/*FVector Location(0.f, 0.f, 0.f);
+					FRotator Rotation(0.0f, 0.0f, 0.0f);
+					FActorSpawnParameters SpawnInfo;
+					ANavMeshBoundsVolume* HexMapNavigationMeshVolume = World->SpawnActor<ANavMeshBoundsVolume>(Location, Rotation, SpawnInfo);*/
 					break;
 				}
 			}
@@ -104,11 +132,18 @@ FHexMapEdToolkit::FHexMapEdToolkit()
 				.Text(Label)
 				.OnClicked_Static(&Locals::OnHexMapFillButtonClick);
 		}
+
+		static TSharedRef<SWidget> MakeHexMapClearButton(FText Label)
+		{
+			return SNew(SButton)
+				.Text(Label)
+				.OnClicked_Static(&Locals::OnHexMapClearButtonClick);
+		}
 	};
 
 	SAssignNew(ToolkitWidget, SBorder)
 		.HAlign(HAlign_Left)
-		.Padding(25)
+		.Padding(16)
 		.IsEnabled_Static(&Locals::IsWidgetEnabled)
 		[
 			SNew(SVerticalBox)
@@ -119,25 +154,35 @@ FHexMapEdToolkit::FHexMapEdToolkit()
 		[
 			SNew(STextBlock)
 			.AutoWrapText(true)
-		.Text(LOCTEXT("HelperLabel", ""))
+		.Text(LOCTEXT("CopyrightLabel", "Copyright (c) 2017 Serhii Serhiiv. All rights reserved."))
 		]
 	+ SVerticalBox::Slot()
 		.HAlign(HAlign_Fill)
 		.AutoHeight()
+		.Padding(8)
 		[
 			Locals::MakeAttachHexMapChunksToGeneralButton(LOCTEXT("AttachHexMapChunksToGeneral", "Attach HexMap Chunks To General"))
 		]
 	+ SVerticalBox::Slot()
 		.HAlign(HAlign_Fill)
 		.AutoHeight()
+		.Padding(8)
 		[
 			Locals::MakeHexMapTilesRefreshPositionsButton(LOCTEXT("HexMapTilesRefreshPositions", "Refresh Tiles Positions"))
 		]
 	+ SVerticalBox::Slot()
 		.HAlign(HAlign_Fill)
 		.AutoHeight()
+		.Padding(8)
 		[
 			Locals::MakeHexMapFillButton(LOCTEXT("HexMapTilesFill", "Fill HexMap"))
+		]
+	+ SVerticalBox::Slot()
+		.HAlign(HAlign_Fill)
+		.AutoHeight()
+		.Padding(8)
+		[
+			Locals::MakeHexMapClearButton(LOCTEXT("HexMapTilesClear", "Clear HexMap"))
 		]
 
 		];
@@ -161,3 +206,5 @@ class FEdMode* FHexMapEdToolkit::GetEditorMode() const
 {
 	return GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap);
 }
+
+#endif

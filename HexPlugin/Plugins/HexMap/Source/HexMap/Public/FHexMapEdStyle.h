@@ -2,6 +2,8 @@
 
 #pragma once
 
+#if WITH_EDITOR
+
 #include "CoreMinimal.h"
 #include "ISettingsModule.h"
 #include "ModuleManager.h"
@@ -21,5 +23,6 @@ public:
 	static void Initialize();
 	static void Shutdown();
 	static TSharedPtr<class ISlateStyle> Get();
-
 };
+
+#endif

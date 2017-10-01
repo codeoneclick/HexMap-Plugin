@@ -21,10 +21,14 @@ protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
-	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& Event) override;
 
+#if WITH_EDITOR
+
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& Event) override;
 	virtual void EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown) override;
 	virtual void EditorApplyRotation(const FRotator & DeltaRotation, bool bAltDown, bool bShiftDown, bool bCtrlDown) override;
+
+#endif
 
 	void CreateTiles();
 	void DestroyTiles();
@@ -52,6 +56,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UMaterial* HexMapTileMaterial;
+
+	UPROPERTY(VisibleAnywhere, Category = Materials)
+	class UFreeformMeshComponent* Geometry;
+
 
 	void OnHexMapTileMeshChanged();
 	void OnHexMapTileMaterialChanged();

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#if WITH_EDITOR
+
 #include "EdMode.h"
 
 class FHexMapEdMode : public FEdMode
@@ -26,3 +28,5 @@ public:
 
 	static FEditorModeID EM_HexMap;
 };
+
+#endif

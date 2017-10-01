@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HexMapPrivatePCH.h"
+
+#if WITH_EDITOR
+
 #include "HexMap.h"
 #include "FHexMapEdMode.h"
 #include "FHexMapEdToolkit.h"
@@ -65,3 +68,5 @@ bool FHexMapEdMode::UsesToolkits() const
 {
 	return true;
 }
+
+#endif
