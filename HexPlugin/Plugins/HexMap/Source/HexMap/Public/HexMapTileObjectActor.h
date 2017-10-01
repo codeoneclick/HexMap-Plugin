@@ -34,4 +34,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* GeometryComponent;
+
+	UPROPERTY(EditAnywhere)
+	bool bSnapToGrid;
 };

@@ -48,11 +48,20 @@ void AHexMapTileObjectActor::EditorApplyTranslation(const FVector & DeltaTransla
 		float NearestDistance = 2048.f;
 		for (int HexMapChunkTilePositionIndex = 0; HexMapChunkTilePositionIndex < HexMapChunkTilePositions.Num(); ++HexMapChunkTilePositionIndex)
 		{
-			float CurrentDistance = PredictedPosition.Distance(PredictedPosition, HexMapChunkTilePositions[HexMapChunkTilePositionIndex]);
+			FVector SnapPosition = HexMapChunkTilePositions[HexMapChunkTilePositionIndex];
+			FVector GoalPosition = PredictedPosition;
+			SnapPosition.Z = 0.f;
+			GoalPosition.Z = 0.f;
+
+			float CurrentDistance = GoalPosition.Distance(GoalPosition, SnapPosition);
 			if (CurrentDistance < NearestDistance)
 			{
 				NearestDistance = CurrentDistance;
 				NearestHexMapChunkTilePosition = HexMapChunkTilePositions[HexMapChunkTilePositionIndex];
+				if (!bSnapToGrid)
+				{
+					NearestHexMapChunkTilePosition.Z = PredictedPosition.Z;
+				}
 			}
 		}
 		if (NearestDistance < (HexMapGeneralActor->TileWidth + HexMapGeneralActor->TileHeight) * .5f * 1.5f)
@@ -82,11 +91,20 @@ void AHexMapTileObjectActor::OnEditorMouseReleased()
 		float NearestDistance = 2048.f;
 		for (int HexMapChunkTilePositionIndex = 0; HexMapChunkTilePositionIndex < HexMapChunkTilePositions.Num(); ++HexMapChunkTilePositionIndex)
 		{
-			float CurrentDistance = CurrentPosition.Distance(CurrentPosition, HexMapChunkTilePositions[HexMapChunkTilePositionIndex]);
+			FVector SnapPosition = HexMapChunkTilePositions[HexMapChunkTilePositionIndex];
+			FVector GoalPosition = CurrentPosition;
+			SnapPosition.Z = 0.f;
+			GoalPosition.Z = 0.f;
+
+			float CurrentDistance = GoalPosition.Distance(GoalPosition, SnapPosition);
 			if (CurrentDistance < NearestDistance)
 			{
 				NearestDistance = CurrentDistance;
 				NearestHexMapChunkTilePosition = HexMapChunkTilePositions[HexMapChunkTilePositionIndex];
+				if (!bSnapToGrid)
+				{
+					NearestHexMapChunkTilePosition.Z = CurrentPosition.Z;
+				}
 			}
 		}
 		auto HexMapChunkActorItr = HexMapGeneralActor->HexMapChunkActorToPositionLinkage.Find(NearestHexMapChunkTilePosition);

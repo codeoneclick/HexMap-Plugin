@@ -49,6 +49,9 @@ void AHexMapGeneralActor::OnHexMapChunkActorChangedLocation()
 {
 	HexMapChunkTilePositions.Empty();
 	HexMapChunkActorToPositionLinkage.Empty();
+	HexMapChunkActors.RemoveAll([](const AHexMapChunkActor* HexMapChunkActor) {
+		return HexMapChunkActor == nullptr;
+	});
 	for (int HexMapChunkActorIndex = 0; HexMapChunkActorIndex < HexMapChunkActors.Num(); ++HexMapChunkActorIndex)
 	{
 		AHexMapChunkActor* HexMapChunkActor = HexMapChunkActors[HexMapChunkActorIndex];

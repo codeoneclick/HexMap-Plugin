@@ -35,6 +35,14 @@ void AHexMapChunkActor::Tick(float DeltaTime)
 void AHexMapChunkActor::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+	for (TActorIterator<AHexMapGeneralActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		AHexMapGeneralActor* HexMapGeneralActor = *ActorItr;
+		TileWidth = HexMapGeneralActor->TileWidth;
+		TileHeight = HexMapGeneralActor->TileHeight;
+		break;
+	}
+
 	if (!bIsCreated)
 	{
 		AHexMapChunkActor::DestroyTiles();
