@@ -20,7 +20,7 @@ FHexMapEdStyle::~FHexMapEdStyle()
 
 FString FHexMapEdStyle::InContent(const FString& RelativePath, const ANSICHAR* Extension)
 {
-	static FString ContentDir = FPaths::GamePluginsDir() / TEXT("HexMap/Content");
+	static FString ContentDir = FPaths::GamePluginsDir() / TEXT("HexMapExtension/Content");
 	return (ContentDir / RelativePath) + Extension;
 }
 
