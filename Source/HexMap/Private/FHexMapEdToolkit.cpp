@@ -542,24 +542,44 @@ TSharedRef<SWidget>FHexMapEdToolkit::MAKE_RandomizeTiles_BTN(const FText& Label)
 
 FReply FHexMapEdToolkit::ON_CreateCircleChunk_BTN()
 {
-	FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
-	FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
-	FVector EditorCameraPosition = ViewportClient->GetViewLocation();
-	float Distance = 3000.f;
-
-	FVector Location = EditorCameraPosition + EditorCameraDirection * Distance;
-	UWorld* World = GEditor->GetEditorWorldContext().World();
+	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+	FVector Location = HexMapEdMode->EdModeCreateCircleChunkProperties->Location;
+	if (Location.IsZero())
+	{
+		FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
+		FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
+		FVector EditorCameraPosition = ViewportClient->GetViewLocation();
+		float Distance = 3000.f;
+		Location = EditorCameraPosition + EditorCameraDirection * Distance;
+	}
 	
+	UWorld* World = GEditor->GetEditorWorldContext().World();
+
 	GEditor->BeginTransaction(LOCTEXT("CreateHMCircleChunk", "CreateHMCircleChunk"));
 	{
 		AHexMapCircleChunk* Chunk = World->SpawnActor<AHexMapCircleChunk>(Location, FRotator(0.f));
-		FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-		if (HexMapEdMode)
-		{
-			Chunk->SetRadius(HexMapEdMode->EdModeCreateCircleChunkProperties->Radius);
-		}
+		Chunk->SetRadius(HexMapEdMode->EdModeCreateCircleChunkProperties->Radius);
 		GEditor->SelectNone(true, true);
 		GEditor->SelectActor(Chunk, true, true);
+
+		if (HexMapEdMode->EdModeCreateCircleChunkProperties->Tile_BP)
+		{
+			TArray<USceneComponent*> ComponentsInRoot;
+			Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
+			for (USceneComponent* ComponentInRoot : ComponentsInRoot)
+			{
+				if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
+				{
+					UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
+					if (TileLocationComponent->LinkedTile)
+					{
+						TileLocationComponent->LinkedTile->Destroy();
+						TileLocationComponent->LinkedTile = nullptr;
+					}
+					AHexMapTile* Tile = World->SpawnActor<AHexMapTile>(HexMapEdMode->EdModeCreateCircleChunkProperties->Tile_BP, TileLocationComponent->GetComponentLocation(), FRotator(0.f));
+				}
+			}
+		}
 	}
 	GEditor->EndTransaction();
 
@@ -568,24 +588,44 @@ FReply FHexMapEdToolkit::ON_CreateCircleChunk_BTN()
 
 FReply FHexMapEdToolkit::ON_CreateRectangleChunk_BTN()
 {
-	FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
-	FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
-	FVector EditorCameraPosition = ViewportClient->GetViewLocation();
-	float Distance = 3000.f;
+	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+	FVector Location = HexMapEdMode->EdModeCreateRectangleChunkProperties->Location;
+	if (Location.IsZero())
+	{
+		FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
+		FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
+		FVector EditorCameraPosition = ViewportClient->GetViewLocation();
+		float Distance = 3000.f;
+		Location = EditorCameraPosition + EditorCameraDirection * Distance;
+	}
 
-	FVector Location = EditorCameraPosition + EditorCameraDirection * Distance;
 	UWorld* World = GEditor->GetEditorWorldContext().World();
 
 	GEditor->BeginTransaction(LOCTEXT("CreateHMRectangleChunk", "CreateHMRectangleChunk"));
 	{
 		AHexMapRectangleChunk* Chunk = World->SpawnActor<AHexMapRectangleChunk>(Location, FRotator(0.f));
-		FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-		if (HexMapEdMode)
-		{
-			Chunk->SetSize(HexMapEdMode->EdModeCreateRectangleChunkProperties->SizeX, HexMapEdMode->EdModeCreateRectangleChunkProperties->SizeY);
-		}
+		Chunk->SetSize(HexMapEdMode->EdModeCreateRectangleChunkProperties->SizeX, HexMapEdMode->EdModeCreateRectangleChunkProperties->SizeY);
 		GEditor->SelectNone(true, true);
 		GEditor->SelectActor(Chunk, true, true);
+
+		if (HexMapEdMode->EdModeCreateRectangleChunkProperties->Tile_BP)
+		{
+			TArray<USceneComponent*> ComponentsInRoot;
+			Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
+			for (USceneComponent* ComponentInRoot : ComponentsInRoot)
+			{
+				if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
+				{
+					UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
+					if (TileLocationComponent->LinkedTile)
+					{
+						TileLocationComponent->LinkedTile->Destroy();
+						TileLocationComponent->LinkedTile = nullptr;
+					}
+					AHexMapTile* Tile = World->SpawnActor<AHexMapTile>(HexMapEdMode->EdModeCreateRectangleChunkProperties->Tile_BP, TileLocationComponent->GetComponentLocation(), FRotator(0.f));
+				}
+			}
+		}
 	}
 	GEditor->EndTransaction();
 
