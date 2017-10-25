@@ -54,7 +54,12 @@ void FHexMapEdToolkit::Init(const TSharedPtr<class IToolkitHost>& ToolkitHost)
 			.HAlign(HAlign_Fill)
 			[
 				MAKE_SetTileSize_SLOT(this)
-			]	
+			]
+			+ SScrollBox::Slot()
+			.HAlign(HAlign_Fill)
+			[
+				MAKE_SelectAllChunks_SLOT(this)
+			]
 			+ SScrollBox::Slot()
 			.HAlign(HAlign_Fill)
 			[
@@ -470,6 +475,42 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit*
 		];
 }
 
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SelectAllChunks_SLOT(FHexMapEdToolkit* SELF)
+{
+	return SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.HAlign(HAlign_Fill)
+		[
+			SNew(SSeparator)
+			.ColorAndOpacity(FSlateColor(FLinearColor::Black))
+		]
+		+ SVerticalBox::Slot()
+		.HAlign(HAlign_Fill)
+		.AutoHeight()
+		[
+			SNew(SExpandableArea)
+			.InitiallyCollapsed(false)
+			.BorderImage(FEditorStyle::GetBrush("ToolBar.Background"))
+			.Padding(8.f)
+			.HeaderContent()
+			[
+				SNew(STextBlock)
+				.ColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
+				.Text(NSLOCTEXT("SelectAllChunksHeader", "SelectAllChunksHeader", "Select All Chunks"))
+			]
+			.BodyContent()
+			[
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				.HAlign(HAlign_Fill)
+				.AutoHeight()
+				[
+					MAKE_SelectAllChunks_BTN(LOCTEXT("SelectAllHMChunksBTN", "Execute"))
+				]
+			]
+		];
+}
+
 TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SetTileSize_BTN(const FText& Label)
 {
 	return SNew(SButton)
@@ -530,7 +571,7 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddTile_BTN(const FText& Label)
 		.OnClicked_Static(FHexMapEdToolkit::ON_AddTile_BTN);
 }
 
-TSharedRef<SWidget>FHexMapEdToolkit::MAKE_RandomizeTiles_BTN(const FText& Label)
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
@@ -538,6 +579,16 @@ TSharedRef<SWidget>FHexMapEdToolkit::MAKE_RandomizeTiles_BTN(const FText& Label)
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
 		.OnClicked_Static(FHexMapEdToolkit::ON_RandomizeTiles_BTN);
+}
+
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SelectAllChunks_BTN(const FText& Label)
+{
+	return SNew(SButton)
+		.Text(Label)
+		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
+		.ForegroundColor(FLinearColor::White)
+		.HAlign(HAlign_Center)
+		.OnClicked_Static(FHexMapEdToolkit::ON_SelectAllChunks_BTN);
 }
 
 FReply FHexMapEdToolkit::ON_CreateCircleChunk_BTN()
@@ -770,6 +821,25 @@ FReply FHexMapEdToolkit::ON_SetTileSize_BTN()
 	AHexMapGrid* Grid = FHex::GetGrid(World);
 	Grid->SetTileSize(HexMapEdMode->EdModeSetTileSizeProperties->TileSize);
 	GEditor->EndTransaction();
+	return FReply::Handled();
+}
+
+FReply FHexMapEdToolkit::ON_SelectAllChunks_BTN()
+{
+	UWorld* World = GEditor->GetEditorWorldContext().World();
+	GEditor->SelectNone(true, true);
+
+	for (TActorIterator<AHexMapChunk> It(World); It; ++It)
+	{
+		if (It)
+		{
+			AHexMapChunk* Chunk = *It;
+			if (Chunk)
+			{
+				GEditor->SelectActor(Chunk, true, true);
+			}
+		}
+	}
 	return FReply::Handled();
 }
 

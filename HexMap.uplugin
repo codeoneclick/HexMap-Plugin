@@ -18,7 +18,12 @@
 		{
 			"Name": "HexMap",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms":
+			[ 
+				"Win32",
+				"Win64"
+			]
 		}
 	]
 }

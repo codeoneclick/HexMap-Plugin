@@ -12,6 +12,7 @@ class FHexMapEdToolkit : public FModeToolkit
 {
 private:
 
+	static TSharedRef<SWidget> MAKE_SelectAllChunks_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_SetTileSize_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_CreateCircleChunk_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_CreateRectangleChunk_BTN(const FText& Label);
@@ -20,6 +21,7 @@ private:
 	static TSharedRef<SWidget> MAKE_AddTile_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_RandomizeTiles_BTN(const FText& Label);
 
+	static TSharedRef<SWidget> MAKE_SelectAllChunks_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_SetTileSize_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_CreateCircleChunk_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_CreateRectangleChunk_SLOT(FHexMapEdToolkit* SELF);
@@ -30,6 +32,7 @@ private:
 	static TSharedRef<SWidget> MAKE_ValidateMap_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_Copyright_SLOT(FHexMapEdToolkit* SELF);
 
+	static FReply ON_SelectAllChunks_BTN();
 	static FReply ON_SetTileSize_BTN();
 	static FReply ON_CreateCircleChunk_BTN();
 	static FReply ON_CreateRectangleChunk_BTN();
