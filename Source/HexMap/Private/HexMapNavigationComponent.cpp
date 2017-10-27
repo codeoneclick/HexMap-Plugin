@@ -70,7 +70,6 @@ bool UHexMapNavigationComponent::GetPath(const FVector& StartLocation, const FVe
 			UHexMapTileLocationComponent* GoalTileLocationComponent = *GoalTileLocationComponentIt;
 			bResult = Navigation->GetPath(StartTileLocationComponent, GoalTileLocationComponent, OutSolution);
 		}
-
 	}
 	return bResult;
 }
