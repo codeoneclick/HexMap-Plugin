@@ -8,6 +8,7 @@
 #include "HexMapTile.h"
 #include "HexCoord.h"
 #include "HexMapTileLocationComponent.h"
+#include "HexNavigation.h"
 
 UHexMapGridComponent::UHexMapGridComponent()
 {

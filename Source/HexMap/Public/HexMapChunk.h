@@ -59,6 +59,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	TMap<FVector2D, class UHexMapTileLocationComponent*> TileLocationComponentsToLocationsLinkages;
+
+	UPROPERTY(VisibleAnywhere)
 	TMap<FIntVector, class UHexMapTileLocationComponent*> TileLocationComponentsToHexCoordsLinkages;
 
 	UPROPERTY(VisibleAnywhere)
