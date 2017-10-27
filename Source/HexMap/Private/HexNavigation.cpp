@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "HexMapPrivatePCH.h"
 #include "HexMap.h"
+#include "HexUtils.h"
+#include "HexMapGrid.h"
 #include "HexNavigation.h"
 #include "HexMapTile.h"
 #include "HexMapTileLocationComponent.h"
@@ -174,9 +176,17 @@ float FHexNavigationConcreteNode::DistanceToLocal(const TSharedPtr<FHexNavigatio
 
 float FHexNavigationConcreteNode::DistanceTo(const TSharedPtr<FHexNavigationAStarNode>& Node) const
 {
-	float DeltaX = X - Node->GetX();
-	float DeltaY = Y - Node->GetY();
-	return sqrtf(X * X + Y * Y);
+	return FVector2D::Distance(FVector2D(X, Y), FVector2D(Node->GetX(), Node->GetY()));
+}
+
+void FHexNavigationConcreteNode::SetHeight(float Height_)
+{
+	Height = Height_;
+}
+
+float FHexNavigationConcreteNode::GetHeight() const
+{
+	return Height;
 }
 
 void FHexNavigation::RegisterHexTileLocationComponent(class UHexMapTileLocationComponent* TileLocationComponent)
@@ -203,6 +213,7 @@ void FHexNavigation::UpdateNavigationNodes(bool bReConstruct)
 				TSharedPtr<FHexNavigationConcreteNode> NavigationNode = MakeShareable(new FHexNavigationConcreteNode());
 				NavigationNode->SetPassable(true);
 				NavigationNode->SetPosition(Location.X, Location.Y);
+				NavigationNode->SetHeight(Location.Z);
 				NavigationNodes.Add(TileLocationComponent, NavigationNode);
 			}
 		}
@@ -228,6 +239,11 @@ void FHexNavigation::UpdateNavigationNodes(bool bReConstruct)
 	}
 }
 
+void FHexNavigation::SetTileHeight(float TileHeight_)
+{
+	TileHeight = TileHeight_;
+}
+
 bool FHexNavigation::GetPath(UHexMapTileLocationComponent* StartTileLocationComponent,
 							 UHexMapTileLocationComponent* GoalTileLocationComponent,
 							 TArray<FVector>& OutSolution)
@@ -249,7 +265,8 @@ bool FHexNavigation::GetPath(UHexMapTileLocationComponent* StartTileLocationComp
 			{
 				for (const TSharedPtr<FHexNavigationAStarNode>& AStarNode : Solution)
 				{
-					OutSolution.Add(FVector(AStarNode->GetX(), AStarNode->GetY(), 0.f));
+					TSharedPtr<FHexNavigationConcreteNode> ConcreteNode = StaticCastSharedPtr<FHexNavigationConcreteNode>(AStarNode);
+					OutSolution.Add(FVector(AStarNode->GetX(), AStarNode->GetY(), ConcreteNode->GetHeight() + TileHeight));
 				}
 				bResult = true;
 			}

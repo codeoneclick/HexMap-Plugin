@@ -30,6 +30,7 @@ void UHexMapNavigationComponent::SetupNavigation()
 {
 	Navigation = MakeShareable(new FHexNavigation());
 	AHexMapGrid* Grid = FHex::GetGrid(GetWorld());
+	Navigation->SetTileHeight(Grid->TileHeight);
 	TArray<AHexMapChunk*> Chunks = Grid->Chunks;
 	for (AHexMapChunk* Chunk : Chunks)
 	{

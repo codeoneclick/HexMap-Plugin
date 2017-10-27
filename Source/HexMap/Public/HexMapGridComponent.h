@@ -47,8 +47,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	float TileSize;
 
-	UPROPERTY(EditAnywhere)
-	float TileHeight = 400.f;
+	UPROPERTY(VisibleAnywhere)
+	float TileHeight;
 
 	UPROPERTY(VisibleAnywhere)
 	float TileHeightTrashhold = 10.f;

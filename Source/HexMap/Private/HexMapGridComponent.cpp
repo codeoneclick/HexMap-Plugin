@@ -29,6 +29,7 @@ void UHexMapGridComponent::SetupBaseProperties()
 {
 	AHexMapGrid* Grid = FHex::GetGrid(GetWorld());
 	TileSize = Grid->TileSize;
+	TileHeight = Grid->TileHeight;
 }
 
 void UHexMapGridComponent::SetupTilesProperties()

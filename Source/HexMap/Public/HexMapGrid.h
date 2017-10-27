@@ -57,6 +57,9 @@ public:
 	UPROPERTY(EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
 	float TileSize = 200.f;
 
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
+	float TileHeight = 400.f;
+
 	UPROPERTY(VisibleAnywhere)
 	FHexLayout Layout;
 

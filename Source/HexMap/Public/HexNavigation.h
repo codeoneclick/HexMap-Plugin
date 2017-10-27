@@ -125,6 +125,7 @@ class HEXMAP_API FHexNavigationConcreteNode : public FHexNavigationAStarNode
 protected:
 
 	bool bIsPassable = true;
+	float Height = 0.f;
 
 public:
 
@@ -136,6 +137,9 @@ public:
 
 	float DistanceToLocal(const TSharedPtr<FHexNavigationAStarNode>& Node) const;
 	float DistanceTo(const TSharedPtr<FHexNavigationAStarNode>& Node) const override;
+
+	void SetHeight(float Height_);
+	float GetHeight() const;
 };
 
 struct FHexNavigationAStarNodeComparator
@@ -177,6 +181,8 @@ protected:
 	TArray<class UHexMapTileLocationComponent*> RegisteredTiles;
 	TMap<class UHexMapTileLocationComponent*, TSharedPtr<FHexNavigationConcreteNode>> NavigationNodes;
 
+	float TileHeight = 0.f;
+
 public:
 
 	virtual ~FHexNavigation() = default;
@@ -184,6 +190,7 @@ public:
 	void RegisterHexTileLocationComponent(class UHexMapTileLocationComponent* TileLocationComponent);
 	void UnRegisterHexTileLocationComponent(class UHexMapTileLocationComponent* TileLocationComponent);
 	virtual void UpdateNavigationNodes(bool bReConstruct = false);
+	void SetTileHeight(float TileHeight_);
 
 	bool GetPath(UHexMapTileLocationComponent* StartTileLocationComponent,
 				 UHexMapTileLocationComponent* GoalTileLocationComponent,
