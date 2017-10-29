@@ -83,6 +83,7 @@ void AHexMapGrid::OnTileSizeChanged()
 	for (AHexMapChunk* Chunk : Chunks)
 	{
 		Chunk->OnTileSizeChanged(false);
+		Chunk->Snap();
 	}
 }
 

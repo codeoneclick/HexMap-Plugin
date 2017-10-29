@@ -203,8 +203,9 @@ void AHexMapChunk::UpdateTileLocationComponent(const FHexCoord& HexLocation, con
 		{
 			AHexMapTile* Tile = TileLocationComponent->LinkedTile;
 			FVector TileLocation = Tile->GetActorLocation();
-			TileLocation.X = Location2D.X;
-			TileLocation.Y = Location2D.Y;
+			FVector TileLocationComponentntLocation = TileLocationComponent->GetComponentLocation();
+			TileLocation.X = TileLocationComponentntLocation.X;
+			TileLocation.Y = TileLocationComponentntLocation.Y;
 			Tile->SetActorLocation(TileLocation);
 		}
 	}
