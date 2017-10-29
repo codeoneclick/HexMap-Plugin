@@ -97,7 +97,7 @@ void AHexMapTile::Snap(bool bValidationDialog)
 	AHexMapGrid* Grid = FHex::GetGrid(GetWorld(), bError);
 	if (!Grid)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't find HexMapGrid!"));
+		UE_LOG(LogTemp, Error, TEXT("Can't find HexMapGrid!"));
 		return;
 	}
 	FVector CurrentTileLocation = FHex::GetTileLocation(Grid->TilesLocations, GetActorLocation());
@@ -118,7 +118,7 @@ void AHexMapTile::Snap(bool bValidationDialog)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Can't find Chunk for cached location!"));
+			UE_LOG(LogTemp, Error, TEXT("Can't find Chunk for cached location!"));
 		}
 
 		AHexMapChunk* CurrentChunk = *CurrentChunkIt;
@@ -160,17 +160,17 @@ void AHexMapTile::Snap(bool bValidationDialog)
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Can't attach more than one Tile per LocationComponent!"));
+				UE_LOG(LogTemp, Error, TEXT("Can't attach more than one Tile per LocationComponent!"));
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Can't find TileLocationComponent for current location!"));
+			UE_LOG(LogTemp, Error, TEXT("Can't find TileLocationComponent for current location!"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't find Chunk for current location!"));
+		UE_LOG(LogTemp, Error, TEXT("Can't find Chunk for current location!"));
 	}
 }
 

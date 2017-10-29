@@ -6,6 +6,7 @@
 #include "HexNavigation.h"
 #include "HexMapTile.h"
 #include "HexMapTileLocationComponent.h"
+#include "HexMapTileNavigationComponent.h"
 
 void FHexNavigationAbstractNode::SetParent(const TSharedPtr<FHexNavigationAbstractNode>& Parent_)
 {
@@ -211,7 +212,18 @@ void FHexNavigation::UpdateNavigationNodes(bool bReConstruct)
 			{
 				FVector Location = TileLocationComponent->LinkedTile->GetActorLocation();
 				TSharedPtr<FHexNavigationConcreteNode> NavigationNode = MakeShareable(new FHexNavigationConcreteNode());
-				NavigationNode->SetPassable(true);
+				bool bIsPassable = false;
+				UHexMapTileNavigationComponent* TileNavigationComponent = TileLocationComponent->LinkedTile->FindComponentByClass<UHexMapTileNavigationComponent>();
+				if (TileNavigationComponent)
+				{
+					bIsPassable = TileNavigationComponent->bIsPassable;
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Can't find TileNavigationComponent!"));
+				}
+
+				NavigationNode->SetPassable(bIsPassable);
 				NavigationNode->SetPosition(Location.X, Location.Y);
 				NavigationNode->SetHeight(Location.Z);
 				NavigationNodes.Add(TileLocationComponent, NavigationNode);
