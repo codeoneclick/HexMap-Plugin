@@ -182,6 +182,7 @@ protected:
 	TMap<class UHexMapTileLocationComponent*, TSharedPtr<FHexNavigationConcreteNode>> NavigationNodes;
 
 	float TileHeight = 0.f;
+	float MaxPassableHeight = std::numeric_limits<float>::max();
 
 public:
 
@@ -191,6 +192,7 @@ public:
 	void UnRegisterHexTileLocationComponent(class UHexMapTileLocationComponent* TileLocationComponent);
 	virtual void UpdateNavigationNodes(bool bReConstruct = false);
 	void SetTileHeight(float TileHeight_);
+	void SetMaxPassableHeight(float MaxPassableHeight_);
 
 	bool GetPath(UHexMapTileLocationComponent* StartTileLocationComponent,
 				 UHexMapTileLocationComponent* GoalTileLocationComponent,

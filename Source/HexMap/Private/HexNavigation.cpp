@@ -236,13 +236,15 @@ void FHexNavigation::UpdateNavigationNodes(bool bReConstruct)
 		UHexMapTileLocationComponent* TileLocationComponent = NavigationNodeIt.Key;
 		TSharedPtr<FHexNavigationConcreteNode> NavigationNode = NavigationNodeIt.Value;
 		NavigationNode->RemoveChildren();
+		float TileLocationComponentHeight = TileLocationComponent->LinkedTile->GetActorLocation().Z;
 		for (UHexMapTileLocationComponent* NeighbourTileLocationComponent : TileLocationComponent->Neighbours)
 		{
+			float NeighbourTileLocationComponentHeight = NeighbourTileLocationComponent->LinkedTile->GetActorLocation().Z;
 			auto NeighbourNavigationNodeIt = NavigationNodes.Find(NeighbourTileLocationComponent);
 			if (NeighbourNavigationNodeIt)
 			{
 				TSharedPtr<FHexNavigationConcreteNode> NeighbourNavigationNode = *NeighbourNavigationNodeIt;
-				if (NeighbourNavigationNode->GetPassable())
+				if (NeighbourNavigationNode->GetPassable() && FMath::Abs(TileLocationComponentHeight - NeighbourTileLocationComponentHeight) < MaxPassableHeight)
 				{
 					NavigationNode->AddChild(NeighbourNavigationNode, NavigationNode->DistanceToLocal(NeighbourNavigationNode));
 				}
@@ -254,6 +256,11 @@ void FHexNavigation::UpdateNavigationNodes(bool bReConstruct)
 void FHexNavigation::SetTileHeight(float TileHeight_)
 {
 	TileHeight = TileHeight_;
+}
+
+void FHexNavigation::SetMaxPassableHeight(float MaxPassableHeight_)
+{
+	MaxPassableHeight = MaxPassableHeight_;
 }
 
 bool FHexNavigation::GetPath(UHexMapTileLocationComponent* StartTileLocationComponent,

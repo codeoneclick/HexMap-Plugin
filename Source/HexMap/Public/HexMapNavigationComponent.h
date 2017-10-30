@@ -25,6 +25,10 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(EditAnywhere)
+	float MaxPassableHeight = 55.f;
+
 	virtual void SetupNavigation();
 	bool GetPath(const FVector& StartLocation, const FVector& GoalLocation, TArray<FVector>& OutSolution);
+
 };
