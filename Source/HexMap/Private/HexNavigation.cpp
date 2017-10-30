@@ -244,7 +244,7 @@ void FHexNavigation::UpdateNavigationNodes(bool bReConstruct)
 			if (NeighbourNavigationNodeIt)
 			{
 				TSharedPtr<FHexNavigationConcreteNode> NeighbourNavigationNode = *NeighbourNavigationNodeIt;
-				if (NeighbourNavigationNode->GetPassable() && FMath::Abs(TileLocationComponentHeight - NeighbourTileLocationComponentHeight) < MaxPassableHeight)
+				if (NeighbourNavigationNode->GetPassable() && FMath::Abs(TileLocationComponentHeight - NeighbourTileLocationComponentHeight) <= MaxPassableHeight)
 				{
 					NavigationNode->AddChild(NeighbourNavigationNode, NavigationNode->DistanceToLocal(NeighbourNavigationNode));
 				}
