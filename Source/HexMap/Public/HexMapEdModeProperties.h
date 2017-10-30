@@ -79,6 +79,17 @@ public:
 };
 
 UCLASS()
+class HEXMAP_API UHexMapEdModeTileBatchApplierProperties : public UObject
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(Category = "Apply Blueprint", EditAnywhere, meta = (ShowForTools = "Tool_Apply_BP"), BlueprintReadWrite)
+	TSubclassOf<class AHexMapTileBatchApplier> Applier_BP;
+};
+
+UCLASS()
 class HEXMAP_API UHexMapEdModeSetTileSizeProperties : public UObject
 {
 	GENERATED_BODY()

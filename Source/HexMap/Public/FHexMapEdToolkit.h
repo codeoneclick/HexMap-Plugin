@@ -20,6 +20,7 @@ private:
 	static TSharedRef<SWidget> MAKE_ClearSelectedChunks_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_AddTile_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_RandomizeTiles_BTN(const FText& Label);
+	static TSharedRef<SWidget> MAKE_TilesBatchApplier_BTN(const FText& Label);
 
 	static TSharedRef<SWidget> MAKE_SelectAllChunks_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_SetTileSize_SLOT(FHexMapEdToolkit* SELF);
@@ -28,6 +29,7 @@ private:
 	static TSharedRef<SWidget> MAKE_FillChunks_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_ClearChunks_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_TilesBatchApplier_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_AddTile_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_ValidateMap_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_Copyright_SLOT(FHexMapEdToolkit* SELF);
@@ -40,6 +42,7 @@ private:
 	static FReply ON_ClearSelectedChunks_BTN();
 	static FReply ON_AddTile_BTN();
 	static FReply ON_RandomizeTiles_BTN();
+	static FReply ON_TilesBatchApplier_BTN();
 
 protected:
 
@@ -49,9 +52,11 @@ protected:
 	TSharedPtr<IDetailsView> HexMapEdModeFillSelectedChunksPanel;
 	TSharedPtr<IDetailsView> HexMapEdModeAddTilePanel;
 	TSharedPtr<IDetailsView> HexMapEdModeRandomizeTilesPanel;
+	TSharedPtr<IDetailsView> HexMapEdModeTilesBatchApplierPanel;
 	TSharedPtr<SWidget> ToolkitWidget;
 
 	static void GetSelectedChunks(TArray<class AHexMapChunk*>& Chunks);
+	static void GetSelectedTiles(TArray<class AHexMapTile*>& Tiles);
 
 public:
 

@@ -24,6 +24,7 @@ FHexMapEdMode::FHexMapEdMode()
 	EdModeFillSelectedChunksProperties = NewObject<UHexMapEdModeFillSelectedChunksProperties>(GetTransientPackage(), TEXT("HexMapEdModeFillSelectedChunksProperties"), RF_Transactional | RF_MarkAsRootSet);
 	EdModeAddTileProperties = NewObject<UHexMapEdModeAddTileProperties>(GetTransientPackage(), TEXT("HexMapEdModeAddTilePropertiess"), RF_Transactional | RF_MarkAsRootSet);
 	EdModeRandomizeTilesProperties = NewObject<UHexMapEdModeRandomizeTilesProperties>(GetTransientPackage(), TEXT("HexMapEdModeRandomizeTilesProperties"), RF_Transactional | RF_MarkAsRootSet);
+	EdModeTileBatchApplierProperties = NewObject<UHexMapEdModeTileBatchApplierProperties>(GetTransientPackage(), TEXT("HexMapEdModeTileBatchApplierProperties"), RF_Transactional | RF_MarkAsRootSet);
 }
 
 FHexMapEdMode::~FHexMapEdMode()

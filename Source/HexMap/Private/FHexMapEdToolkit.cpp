@@ -23,6 +23,7 @@
 #include "HexMapEdModeProperties.h"
 #include "EditorViewportClient.h"
 #include "HexMapTileRandomizer.h"
+#include "HexMapTileBatchApplier.h"
 
 #define LOCTEXT_NAMESPACE "FHexMapEdToolkit"
 
@@ -89,6 +90,11 @@ void FHexMapEdToolkit::Init(const TSharedPtr<class IToolkitHost>& ToolkitHost)
 			.HAlign(HAlign_Fill)
 			[
 				MAKE_RandomizeTiles_SLOT(this)
+			]
+			+ SScrollBox::Slot()
+			.HAlign(HAlign_Fill)
+			[
+				MAKE_TilesBatchApplier_SLOT(this)
 			]
 			+ SScrollBox::Slot()
 			.HAlign(HAlign_Center)
@@ -475,6 +481,58 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit*
 		];
 }
 
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_TilesBatchApplier_SLOT(FHexMapEdToolkit* SELF)
+{
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
+	SELF->HexMapEdModeTilesBatchApplierPanel = PropertyEditorModule.CreateDetailView(Args);
+	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
+	if (HexMapEdMode)
+	{
+		SELF->HexMapEdModeTilesBatchApplierPanel->SetObject(HexMapEdMode->EdModeTileBatchApplierProperties, true);
+	}
+
+	return SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.HAlign(HAlign_Fill)
+		[
+			SNew(SSeparator)
+			.ColorAndOpacity(FSlateColor(FLinearColor::Black))
+		]
+		+ SVerticalBox::Slot()
+		.HAlign(HAlign_Fill)
+		.AutoHeight()
+		[
+			SNew(SExpandableArea)
+			.InitiallyCollapsed(false)
+			.BorderImage(FEditorStyle::GetBrush("ToolBar.Background"))
+			.Padding(8.f)
+			.HeaderContent()
+			[
+				SNew(STextBlock)
+				.ColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
+				.Text(NSLOCTEXT("TilesBatchApplierHeader", "TilesBatchApplierHeader", "Tiles Batch Applier"))
+			]
+			.BodyContent()
+			[
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				.HAlign(HAlign_Fill)
+				.AutoHeight()
+				.Padding(8.f)
+				[
+					SELF->HexMapEdModeTilesBatchApplierPanel.ToSharedRef()
+				]
+				+ SVerticalBox::Slot()
+				.HAlign(HAlign_Fill)
+				.AutoHeight()
+				[
+					MAKE_TilesBatchApplier_BTN(LOCTEXT("HMTilesBatchApplierBTN", "Execute"))
+				]
+			]
+		];
+}
+
 TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SelectAllChunks_SLOT(FHexMapEdToolkit* SELF)
 {
 	return SNew(SVerticalBox)
@@ -579,6 +637,16 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_BTN(const FText& Label
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
 		.OnClicked_Static(FHexMapEdToolkit::ON_RandomizeTiles_BTN);
+}
+
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_TilesBatchApplier_BTN(const FText& Label)
+{
+	return SNew(SButton)
+		.Text(Label)
+		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
+		.ForegroundColor(FLinearColor::White)
+		.HAlign(HAlign_Center)
+		.OnClicked_Static(FHexMapEdToolkit::ON_TilesBatchApplier_BTN);
 }
 
 TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SelectAllChunks_BTN(const FText& Label)
@@ -854,6 +922,37 @@ FReply FHexMapEdToolkit::ON_RandomizeTiles_BTN()
 	return FReply::Handled();
 }
 
+FReply FHexMapEdToolkit::ON_TilesBatchApplier_BTN()
+{
+	TArray<AHexMapTile *> SelectedTiles;
+	GetSelectedTiles(SelectedTiles);
+	if (SelectedTiles.Num() > 0)
+	{
+		FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+		if (HexMapEdMode && HexMapEdMode->EdModeTileBatchApplierProperties->Applier_BP)
+		{
+			UWorld* World = GEditor->GetEditorWorldContext().World();
+			GEditor->BeginTransaction(LOCTEXT("HMTilesBatchApplier", "HMTilesBatchApplier"));
+			AHexMapTileBatchApplier* Applier = World->SpawnActor<AHexMapTileBatchApplier>(HexMapEdMode->EdModeTileBatchApplierProperties->Applier_BP, FVector(0.f), FRotator(0.f));
+			for (AHexMapTile* Tile : SelectedTiles)
+			{
+				Applier->Apply(Tile);
+			}
+			Applier->Destroy();
+			GEditor->EndTransaction();
+		}
+		else
+		{
+			GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, "You need to choose Applier Blueprint at first!");
+		}
+	}
+	else
+	{
+		GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "At least one HexMapTile should be selected!");
+	}
+	return FReply::Handled();
+}
+
 FReply FHexMapEdToolkit::ON_SetTileSize_BTN()
 {
 	UWorld* World = GEditor->GetEditorWorldContext().World();
@@ -893,6 +992,19 @@ void FHexMapEdToolkit::GetSelectedChunks(TArray<AHexMapChunk *>& Chunks)
 		if (Object && Object->IsA(AHexMapChunk::StaticClass()))
 		{
 			Chunks.Add(Cast<AHexMapChunk>(Object));
+		}
+	}
+}
+
+void FHexMapEdToolkit::GetSelectedTiles(TArray<class AHexMapTile*>& Tiles)
+{
+	USelection* Selection = GEditor->GetSelectedActors();
+	for (int32 i = 0; i < Selection->Num(); ++i)
+	{
+		UObject* Object = Selection->GetSelectedObject(i);
+		if (Object && Object->IsA(AHexMapTile::StaticClass()))
+		{
+			Tiles.Add(Cast<AHexMapTile>(Object));
 		}
 	}
 }

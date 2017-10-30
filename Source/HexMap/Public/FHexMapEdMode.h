@@ -29,6 +29,7 @@ public:
 	class UHexMapEdModeFillSelectedChunksProperties* EdModeFillSelectedChunksProperties;
 	class UHexMapEdModeAddTileProperties* EdModeAddTileProperties;
 	class UHexMapEdModeRandomizeTilesProperties* EdModeRandomizeTilesProperties;
+	class UHexMapEdModeTileBatchApplierProperties* EdModeTileBatchApplierProperties;
 
 	static FEditorModeID EM_HexMap;
 };
