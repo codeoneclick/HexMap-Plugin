@@ -767,6 +767,47 @@ FReply FHexMapEdToolkit::ON_ClearSelectedChunks_BTN()
 
 FReply FHexMapEdToolkit::ON_AddTile_BTN()
 {
+	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+	if (HexMapEdMode->EdModeAddTileProperties->Tile_BP)
+	{
+		FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
+		FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
+		FVector EditorCameraPosition = ViewportClient->GetViewLocation();
+		float Distance = 3000.f;
+		FVector Location = EditorCameraPosition + EditorCameraDirection * Distance;
+
+		UWorld* World = GEditor->GetEditorWorldContext().World();
+
+		GEditor->BeginTransaction(LOCTEXT("AddHMTile", "AddHMTile"));
+		{
+			AHexMapCircleChunk* Chunk = World->SpawnActor<AHexMapCircleChunk>(Location, FRotator(0.f));
+			Chunk->SetRadius(0);
+			GEditor->SelectNone(true, true);
+			GEditor->SelectActor(Chunk, true, true);
+
+			TArray<USceneComponent*> ComponentsInRoot;
+			Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
+			for (USceneComponent* ComponentInRoot : ComponentsInRoot)
+			{
+				if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
+				{
+					UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
+					if (TileLocationComponent->LinkedTile)
+					{
+						TileLocationComponent->LinkedTile->Destroy();
+						TileLocationComponent->LinkedTile = nullptr;
+					}
+					AHexMapTile* Tile = World->SpawnActor<AHexMapTile>(HexMapEdMode->EdModeAddTileProperties->Tile_BP, TileLocationComponent->GetComponentLocation(), FRotator(0.f));
+				}
+			}
+		}
+		GEditor->EndTransaction();
+	}
+	else
+	{
+		GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "Tile Blueprint should be assigned!");
+	}
+	
 	return FReply::Handled();
 }
 
