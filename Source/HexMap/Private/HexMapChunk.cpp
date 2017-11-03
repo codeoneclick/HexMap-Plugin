@@ -221,7 +221,7 @@ void AHexMapChunk::AddHexTileGeometry(const FVector2D& Location2D, float Size, T
 
 	TArray<FVector> HexTileVertices;
 	TArray<FVector2D> HexTileTexcoords;
-	for (float Angle = 0.f; Angle <= M_PI * 2.f; Angle += ((M_PI * 2) / NumSubdivisions))
+	for (float Angle = 0.f; Angle <= 3.14f * 2.f; Angle += ((3.14f * 2) / NumSubdivisions))
 	{
 		HexTileVertices.Add(FVector(Size * cosf(Angle) + Location2D.X, Size * sinf(Angle) + Location2D.Y, 0.f));
 		HexTileTexcoords.Add(FVector2D((cosf(Angle) + 1.f) * .5f, (sinf(Angle) + 1.f) * .5f));
