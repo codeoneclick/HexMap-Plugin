@@ -62,7 +62,7 @@ class HEXMAP_API UHMEdModePropertiesRandomizeTiles : public UObject
 public:
 
 	UPROPERTY(Category = "Randomizer Blueprint", EditAnywhere, meta = (ShowForTools = "Tool_Randomizer_BP"), BlueprintReadWrite)
-	TSubclassOf<class AHexMapTileRandomizer> Randomizer_BP;
+	TSubclassOf<class AHMTileRandomizer> Randomizer_BP;
 };
 
 UCLASS()
@@ -72,8 +72,8 @@ class HEXMAP_API UHMEdModePropertiesTileBatchApplier : public UObject
 
 public:
 
-	UPROPERTY(Category = "Apply Blueprint", EditAnywhere, meta = (ShowForTools = "Tool_Apply_BP"), BlueprintReadWrite)
-	TSubclassOf<class AHexMapTileBatchApplier> Applier_BP;
+	UPROPERTY(Category = "Applier Blueprint", EditAnywhere, meta = (ShowForTools = "Tool_Apply_BP"), BlueprintReadWrite)
+	TSubclassOf<class AHMTileBatchApplier> Applier_BP;
 };
 
 UCLASS()
