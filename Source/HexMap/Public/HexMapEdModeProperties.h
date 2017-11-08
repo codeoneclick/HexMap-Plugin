@@ -7,16 +7,14 @@
 #include "HexMapEdModeProperties.generated.h"
 
 UCLASS()
-class HEXMAP_API UHexMapEdModeCreateCircleChunkProperties : public UObject
+class HEXMAP_API UHMEdModePropertiesAddCircle : public UObject
 {
 	GENERATED_BODY()
 	
 public:
 
-	~UHexMapEdModeCreateCircleChunkProperties();
-
 	UPROPERTY(Category = "Tile Blueprint", EditAnywhere, meta = (ShowForTools = "Tool_Tile_BP"), BlueprintReadWrite)
-	TSubclassOf<class AHexMapTile> Tile_BP;
+	TSubclassOf<class AHMTile> Tile_BP;
 
 	UPROPERTY(Category = "Radius", EditAnywhere, meta = (ShowForTools = "Tool_Radius", ClampMin = 0, ClampMax = 8), BlueprintReadWrite)
 	int32 Radius = 2;
@@ -26,14 +24,14 @@ public:
 };
 
 UCLASS()
-class HEXMAP_API UHexMapEdModeCreateRectangleChunkProperties : public UObject
+class HEXMAP_API UHMEdModePropertiesAddRectangle : public UObject
 {
 	GENERATED_BODY()
 
 public:
 
 	UPROPERTY(Category = "Tile Blueprint", EditAnywhere, meta = (ShowForTools = "Tool_Tile_BP"), BlueprintReadWrite)
-	TSubclassOf<class AHexMapTile> Tile_BP;
+	TSubclassOf<class AHMTile> Tile_BP;
 
 	UPROPERTY(Category = "SizeX", EditAnywhere, meta = (ShowForTools = "Tool_Size", ClampMin = 1, ClampMax = 16), BlueprintReadWrite)
 	int32 SizeX = 2;
@@ -46,29 +44,18 @@ public:
 };
 
 UCLASS()
-class HEXMAP_API UHexMapEdModeFillSelectedChunksProperties : public UObject
+class HEXMAP_API UHMEdModePropertiesAddTile : public UObject
 {
 	GENERATED_BODY()
 
 public:
 
 	UPROPERTY(Category = "Tile Blueprint", EditAnywhere, meta = (ShowForTools = "Tool_Tile_BP"), BlueprintReadWrite)
-	TSubclassOf<class AHexMapTile> Tile_BP;
+	TSubclassOf<class AHMTile> Tile_BP;
 };
 
 UCLASS()
-class HEXMAP_API UHexMapEdModeAddTileProperties : public UObject
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(Category = "Tile Blueprint", EditAnywhere, meta = (ShowForTools = "Tool_Tile_BP"), BlueprintReadWrite)
-	TSubclassOf<class AHexMapTile> Tile_BP;
-};
-
-UCLASS()
-class HEXMAP_API UHexMapEdModeRandomizeTilesProperties : public UObject
+class HEXMAP_API UHMEdModePropertiesRandomizeTiles : public UObject
 {
 	GENERATED_BODY()
 
@@ -79,7 +66,7 @@ public:
 };
 
 UCLASS()
-class HEXMAP_API UHexMapEdModeTileBatchApplierProperties : public UObject
+class HEXMAP_API UHMEdModePropertiesTileBatchApplier : public UObject
 {
 	GENERATED_BODY()
 
@@ -90,7 +77,7 @@ public:
 };
 
 UCLASS()
-class HEXMAP_API UHexMapEdModeSetTileSizeProperties : public UObject
+class HEXMAP_API UHMEdModePropertiesSetTileSize : public UObject
 {
 	GENERATED_BODY()
 

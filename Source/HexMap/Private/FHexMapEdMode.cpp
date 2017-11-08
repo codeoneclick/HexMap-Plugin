@@ -10,21 +10,19 @@
 #include "Editor/UnrealEd/Public/EditorViewportClient.h"
 #include "Editor/UnrealEd/Public/EditorModeManager.h"
 #include "Toolkits/ToolkitManager.h"
-#include "HexMapTile.h"
-#include "HexMapChunk.h"
+#include "HMTile.h"
 #include "HexMapEdModeProperties.h"
 
 FEditorModeID FHexMapEdMode::EM_HexMap(TEXT("EM_HexMap"));
 
 FHexMapEdMode::FHexMapEdMode()
 {
-	EdModeSetTileSizeProperties = NewObject<UHexMapEdModeSetTileSizeProperties>(GetTransientPackage(), TEXT("HexMapEdModeSetTileSizeProperties"), RF_Transactional | RF_MarkAsRootSet);
-	EdModeCreateCircleChunkProperties = NewObject<UHexMapEdModeCreateCircleChunkProperties>(GetTransientPackage(), TEXT("HexMapEdModeCreateCircleChunkProperties"), RF_Transactional | RF_MarkAsRootSet);
-	EdModeCreateRectangleChunkProperties = NewObject<UHexMapEdModeCreateRectangleChunkProperties>(GetTransientPackage(), TEXT("HexMapEdModeCreateRectangleChunkProperties"), RF_Transactional | RF_MarkAsRootSet);
-	EdModeFillSelectedChunksProperties = NewObject<UHexMapEdModeFillSelectedChunksProperties>(GetTransientPackage(), TEXT("HexMapEdModeFillSelectedChunksProperties"), RF_Transactional | RF_MarkAsRootSet);
-	EdModeAddTileProperties = NewObject<UHexMapEdModeAddTileProperties>(GetTransientPackage(), TEXT("HexMapEdModeAddTilePropertiess"), RF_Transactional | RF_MarkAsRootSet);
-	EdModeRandomizeTilesProperties = NewObject<UHexMapEdModeRandomizeTilesProperties>(GetTransientPackage(), TEXT("HexMapEdModeRandomizeTilesProperties"), RF_Transactional | RF_MarkAsRootSet);
-	EdModeTileBatchApplierProperties = NewObject<UHexMapEdModeTileBatchApplierProperties>(GetTransientPackage(), TEXT("HexMapEdModeTileBatchApplierProperties"), RF_Transactional | RF_MarkAsRootSet);
+	EdModePropertiesSetTileSize = NewObject<UHMEdModePropertiesSetTileSize>(GetTransientPackage(), TEXT("EdModePropertiesSetTileSize"), RF_Transactional | RF_MarkAsRootSet);
+	EdModePropertiesAddCircle = NewObject<UHMEdModePropertiesAddCircle>(GetTransientPackage(), TEXT("EdModePropertiesAddCircle"), RF_Transactional | RF_MarkAsRootSet);
+	EdModePropertiesAddRectangle = NewObject<UHMEdModePropertiesAddRectangle>(GetTransientPackage(), TEXT("EdModePropertiesAddRectangle"), RF_Transactional | RF_MarkAsRootSet);
+	EdModePropertiesAddTile = NewObject<UHMEdModePropertiesAddTile>(GetTransientPackage(), TEXT("EdModePropertiesAddTile"), RF_Transactional | RF_MarkAsRootSet);
+	EdModePropertiesRandomizeTiles = NewObject<UHMEdModePropertiesRandomizeTiles>(GetTransientPackage(), TEXT("EdModePropertiesRandomizeTiles"), RF_Transactional | RF_MarkAsRootSet);
+	EdModePropertiesTileBatchApplier = NewObject<UHMEdModePropertiesTileBatchApplier>(GetTransientPackage(), TEXT("EdModePropertiesTileBatchApplier"), RF_Transactional | RF_MarkAsRootSet);
 }
 
 FHexMapEdMode::~FHexMapEdMode()
@@ -51,34 +49,34 @@ void FHexMapEdMode::Exit()
 	FEdMode::Exit();
 }
 
-bool FHexMapEdMode::StartTracking(FEditorViewportClient* InViewportClient, FViewport* InViewport)
+void FHexMapEdMode::Tick(FEditorViewportClient* ViewportClient, float DeltaTime)
 {
-	for (TActorIterator<AHexMapChunk> It(InViewportClient->GetWorld()); It; ++It)
+	FEdMode::Tick(ViewportClient, DeltaTime);
+	for (TActorIterator<AHMTile> It(ViewportClient->GetWorld()); It; ++It)
 	{
-		AHexMapChunk* Chunk = *It;
-		Chunk->OnEditorMousePressed();
+		AHMTile* Tile = *It;
+		Tile->OnEditorTick(DeltaTime);
 	}
-	for (TActorIterator<AHexMapTile> It(InViewportClient->GetWorld()); It; ++It)
-	{
-		AHexMapTile* Tile = *It;
-		Tile->OnEditorMousePressed();
-	}
-	return FEdMode::StartTracking(InViewportClient, InViewport);
 }
 
-bool FHexMapEdMode::EndTracking(FEditorViewportClient* InViewportClient, FViewport* InViewport)
+bool FHexMapEdMode::StartTracking(FEditorViewportClient* ViewportClient, FViewport* InViewport)
 {
-	for (TActorIterator<AHexMapChunk> It(InViewportClient->GetWorld()); It; ++It)
+	for (TActorIterator<AHMTile> It(ViewportClient->GetWorld()); It; ++It)
 	{
-		AHexMapChunk* Chunk = *It;
-		Chunk->OnEditorMouseReleased();
+		AHMTile* Tile = *It;
+		Tile->OnEditorMousePressed();
 	}
-	for (TActorIterator<AHexMapTile> It(InViewportClient->GetWorld()); It; ++It)
+	return FEdMode::StartTracking(ViewportClient, InViewport);
+}
+
+bool FHexMapEdMode::EndTracking(FEditorViewportClient* ViewportClient, FViewport* InViewport)
+{
+	for (TActorIterator<AHMTile> It(ViewportClient->GetWorld()); It; ++It)
 	{
-		AHexMapTile* Tile = *It;
+		AHMTile* Tile = *It;
 		Tile->OnEditorMouseReleased();
 	}
-	return FEdMode::EndTracking(InViewportClient, InViewport);
+	return FEdMode::EndTracking(ViewportClient, InViewport);
 }
 
 bool FHexMapEdMode::UsesToolkits() const

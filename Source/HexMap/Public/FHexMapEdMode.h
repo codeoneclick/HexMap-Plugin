@@ -12,6 +12,7 @@ protected:
 
 	virtual bool StartTracking(FEditorViewportClient* InViewportClient, FViewport* InViewport) override;
 	virtual bool EndTracking(FEditorViewportClient* InViewportClient, FViewport* InViewport) override;
+	virtual void Tick(FEditorViewportClient* ViewportClient, float DeltaTime) override;
 
 	virtual bool UsesToolkits() const override;
 
@@ -23,13 +24,12 @@ public:
 	virtual void Enter() override;
 	virtual void Exit() override;
 
-	class UHexMapEdModeSetTileSizeProperties* EdModeSetTileSizeProperties;
-	class UHexMapEdModeCreateCircleChunkProperties* EdModeCreateCircleChunkProperties;
-	class UHexMapEdModeCreateRectangleChunkProperties* EdModeCreateRectangleChunkProperties;
-	class UHexMapEdModeFillSelectedChunksProperties* EdModeFillSelectedChunksProperties;
-	class UHexMapEdModeAddTileProperties* EdModeAddTileProperties;
-	class UHexMapEdModeRandomizeTilesProperties* EdModeRandomizeTilesProperties;
-	class UHexMapEdModeTileBatchApplierProperties* EdModeTileBatchApplierProperties;
+	class UHMEdModePropertiesSetTileSize* EdModePropertiesSetTileSize;
+	class UHMEdModePropertiesAddCircle* EdModePropertiesAddCircle;
+	class UHMEdModePropertiesAddRectangle* EdModePropertiesAddRectangle;
+	class UHMEdModePropertiesAddTile* EdModePropertiesAddTile;
+	class UHMEdModePropertiesRandomizeTiles* EdModePropertiesRandomizeTiles;
+	class UHMEdModePropertiesTileBatchApplier* EdModePropertiesTileBatchApplier;
 
 	static FEditorModeID EM_HexMap;
 };

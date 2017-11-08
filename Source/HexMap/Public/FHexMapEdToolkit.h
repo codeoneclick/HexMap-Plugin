@@ -12,51 +12,39 @@ class FHexMapEdToolkit : public FModeToolkit
 {
 private:
 
-	static TSharedRef<SWidget> MAKE_SelectAllChunks_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_SetTileSize_BTN(const FText& Label);
-	static TSharedRef<SWidget> MAKE_CreateCircleChunk_BTN(const FText& Label);
-	static TSharedRef<SWidget> MAKE_CreateRectangleChunk_BTN(const FText& Label);
-	static TSharedRef<SWidget> MAKE_FillSelectedChunks_BTN(const FText& Label);
-	static TSharedRef<SWidget> MAKE_ClearSelectedChunks_BTN(const FText& Label);
+	static TSharedRef<SWidget> MAKE_AddCircle_BTN(const FText& Label);
+	static TSharedRef<SWidget> MAKE_AddRectangle_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_AddTile_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_RandomizeTiles_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_TilesBatchApplier_BTN(const FText& Label);
 
-	static TSharedRef<SWidget> MAKE_SelectAllChunks_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_SetTileSize_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_CreateCircleChunk_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_CreateRectangleChunk_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_FillChunks_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_ClearChunks_SLOT(FHexMapEdToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_AddCircle_SLOT(FHexMapEdToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_AddRectangle_SLOT(FHexMapEdToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_AddTile_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_TilesBatchApplier_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_AddTile_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_ValidateMap_SLOT(FHexMapEdToolkit* SELF);
 	static TSharedRef<SWidget> MAKE_Copyright_SLOT(FHexMapEdToolkit* SELF);
 
-	static FReply ON_SelectAllChunks_BTN();
 	static FReply ON_SetTileSize_BTN();
-	static FReply ON_CreateCircleChunk_BTN();
-	static FReply ON_CreateRectangleChunk_BTN();
-	static FReply ON_FillSelectedChunks_BTN();
-	static FReply ON_ClearSelectedChunks_BTN();
+	static FReply ON_AddCircle_BTN();
+	static FReply ON_AddRectangle_BTN();
 	static FReply ON_AddTile_BTN();
 	static FReply ON_RandomizeTiles_BTN();
 	static FReply ON_TilesBatchApplier_BTN();
 
 protected:
 
-	TSharedPtr<IDetailsView> HexMapEdModeSetTileSizePanel;
-	TSharedPtr<IDetailsView> HexMapEdModeCreateCircleChunkPanel;
-	TSharedPtr<IDetailsView> HexMapEdModeCreateRectangleChunkPanel;
-	TSharedPtr<IDetailsView> HexMapEdModeFillSelectedChunksPanel;
-	TSharedPtr<IDetailsView> HexMapEdModeAddTilePanel;
-	TSharedPtr<IDetailsView> HexMapEdModeRandomizeTilesPanel;
-	TSharedPtr<IDetailsView> HexMapEdModeTilesBatchApplierPanel;
-	TSharedPtr<SWidget> ToolkitWidget;
+	static void GetSelectedTiles(TArray<class AHMTile*>& Tiles);
 
-	static void GetSelectedChunks(TArray<class AHexMapChunk*>& Chunks);
-	static void GetSelectedTiles(TArray<class AHexMapTile*>& Tiles);
+	TSharedPtr<IDetailsView> EdModePanelSetTileSize;
+	TSharedPtr<IDetailsView> EdModePanelAddCircle;
+	TSharedPtr<IDetailsView> EdModePanelAddRectangle;
+	TSharedPtr<IDetailsView> EdModePanelAddTile;
+	TSharedPtr<IDetailsView> EdModePanelRandomizeTiles;
+	TSharedPtr<IDetailsView> EdModePanelTilesBatchApplier;
+	TSharedPtr<SWidget> ToolkitWidget;
 
 public:
 

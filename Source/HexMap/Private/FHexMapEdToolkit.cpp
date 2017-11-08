@@ -11,19 +11,15 @@
 #include "Editor/PropertyEditor/Public/PropertyHandle.h"
 #include "Editor/PropertyEditor/Public/PropertyCustomizationHelpers.h"
 #include "SExpandableArea.h"
-#include "HexMapGrid.h"
-#include "HexMapChunk.h"
-#include "HexUtils.h"
-#include "HexMapCircleChunk.h"
-#include "HexMapRectangleChunk.h"
-#include "HexMapTile.h"
-#include "HexMapTileLocationComponent.h"
 #include "DetailLayoutBuilder.h"
 #include "DetailCategoryBuilder.h"
 #include "HexMapEdModeProperties.h"
 #include "EditorViewportClient.h"
-#include "HexMapTileRandomizer.h"
-#include "HexMapTileBatchApplier.h"
+#include "HMGrid.h"
+#include "HMTile.h"
+#include "HMUtilities.h"
+#include "HMTileRandomizer.h"
+#include "HMTileBatchApplier.h"
 
 #define LOCTEXT_NAMESPACE "FHexMapEdToolkit"
 
@@ -59,27 +55,12 @@ void FHexMapEdToolkit::Init(const TSharedPtr<class IToolkitHost>& ToolkitHost)
 			+ SScrollBox::Slot()
 			.HAlign(HAlign_Fill)
 			[
-				MAKE_SelectAllChunks_SLOT(this)
+				MAKE_AddCircle_SLOT(this)
 			]
 			+ SScrollBox::Slot()
 			.HAlign(HAlign_Fill)
 			[
-				MAKE_CreateCircleChunk_SLOT(this)
-			]
-			+ SScrollBox::Slot()
-			.HAlign(HAlign_Fill)
-			[
-				MAKE_CreateRectangleChunk_SLOT(this)
-			]
-			+ SScrollBox::Slot()
-			.HAlign(HAlign_Fill)
-			[
-				MAKE_FillChunks_SLOT(this)
-			]
-			+ SScrollBox::Slot()
-			.HAlign(HAlign_Fill)
-			[
-				MAKE_ClearChunks_SLOT(this)
+				MAKE_AddRectangle_SLOT(this)
 			]
 			+ SScrollBox::Slot()
 			.HAlign(HAlign_Fill)
@@ -137,11 +118,11 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SetTileSize_SLOT(FHexMapEdToolkit* SE
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
-	SELF->HexMapEdModeSetTileSizePanel = PropertyEditorModule.CreateDetailView(Args);
+	SELF->EdModePanelSetTileSize = PropertyEditorModule.CreateDetailView(Args);
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
-		SELF->HexMapEdModeSetTileSizePanel->SetObject(HexMapEdMode->EdModeSetTileSizeProperties, true);
+		SELF->EdModePanelSetTileSize->SetObject(HexMapEdMode->EdModePropertiesSetTileSize, true);
 	}
 
 	return SNew(SVerticalBox)
@@ -173,27 +154,27 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SetTileSize_SLOT(FHexMapEdToolkit* SE
 				.AutoHeight()
 				.Padding(8.f)
 				[
-					SELF->HexMapEdModeSetTileSizePanel.ToSharedRef()
+					SELF->EdModePanelSetTileSize.ToSharedRef()
 				]
 				+ SVerticalBox::Slot()
 				.HAlign(HAlign_Fill)
 				.AutoHeight()
 				[
-					MAKE_SetTileSize_BTN(LOCTEXT("SetHMTileSizeBTN", "Execute"))
+					MAKE_SetTileSize_BTN(LOCTEXT("SetHMTileSizeBTN", "Set Size"))
 				]
 			]
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_CreateCircleChunk_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddCircle_SLOT(FHexMapEdToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
-	SELF->HexMapEdModeCreateCircleChunkPanel = PropertyEditorModule.CreateDetailView(Args);
+	SELF->EdModePanelAddCircle = PropertyEditorModule.CreateDetailView(Args);
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
-		SELF->HexMapEdModeCreateCircleChunkPanel->SetObject(HexMapEdMode->EdModeCreateCircleChunkProperties, true);
+		SELF->EdModePanelAddCircle->SetObject(HexMapEdMode->EdModePropertiesAddCircle, true);
 	}
 
 	return SNew(SVerticalBox)
@@ -215,7 +196,7 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_CreateCircleChunk_SLOT(FHexMapEdToolk
 			[
 				SNew(STextBlock)
 				.ColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
-				.Text(NSLOCTEXT("CreateHexMapCircleChunkHeader", "CreateHexMapCircleChunkHeader", "Create Circle Chunk"))
+				.Text(NSLOCTEXT("HM_HEADER_AddCircle", "HM_HEADER_AddCircle", "Add Circle"))
 			]
 			.BodyContent()
 			[
@@ -225,27 +206,27 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_CreateCircleChunk_SLOT(FHexMapEdToolk
 				.AutoHeight()
 				.Padding(8.f)
 				[
-					SELF->HexMapEdModeCreateCircleChunkPanel.ToSharedRef()
+					SELF->EdModePanelAddCircle.ToSharedRef()
 				]
 				+ SVerticalBox::Slot()
 				.HAlign(HAlign_Fill)
 				.AutoHeight()
 				[
-					MAKE_CreateCircleChunk_BTN(LOCTEXT("CreateHMChunkBTN", "Execute"))
+					MAKE_AddCircle_BTN(LOCTEXT("HM_BTN_AddCircle", "Add Circle"))
 				]
 			]
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_CreateRectangleChunk_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddRectangle_SLOT(FHexMapEdToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
-	SELF->HexMapEdModeCreateRectangleChunkPanel = PropertyEditorModule.CreateDetailView(Args);
+	SELF->EdModePanelAddRectangle = PropertyEditorModule.CreateDetailView(Args);
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
-		SELF->HexMapEdModeCreateRectangleChunkPanel->SetObject(HexMapEdMode->EdModeCreateRectangleChunkProperties, true);
+		SELF->EdModePanelAddRectangle->SetObject(HexMapEdMode->EdModePropertiesAddRectangle, true);
 	}
 
 	return SNew(SVerticalBox)
@@ -267,7 +248,7 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_CreateRectangleChunk_SLOT(FHexMapEdTo
 			[
 				SNew(STextBlock)
 				.ColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
-				.Text(NSLOCTEXT("CreateHexMapRectangleChunkHeader", "CreateHexMapRectangleChunkHeader", "Create Rectangle Chunk"))
+				.Text(NSLOCTEXT("HM_HEADER_AddRectangle", "HM_HEADER_AddRectangle", "Add Rectangle"))
 			]
 			.BodyContent()
 			[
@@ -277,101 +258,13 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_CreateRectangleChunk_SLOT(FHexMapEdTo
 				.AutoHeight()
 				.Padding(8.f)
 				[
-					SELF->HexMapEdModeCreateRectangleChunkPanel.ToSharedRef()
+					SELF->EdModePanelAddRectangle.ToSharedRef()
 				]
 				+ SVerticalBox::Slot()
 				.HAlign(HAlign_Fill)
 				.AutoHeight()
 				[
-					MAKE_CreateRectangleChunk_BTN(LOCTEXT("CreateHMChunkBTN", "Execute"))
-				]
-			]
-		];
-}
-
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_FillChunks_SLOT(FHexMapEdToolkit* SELF)
-{
-	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
-	SELF->HexMapEdModeFillSelectedChunksPanel = PropertyEditorModule.CreateDetailView(Args);
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
-	if (HexMapEdMode)
-	{
-		SELF->HexMapEdModeFillSelectedChunksPanel->SetObject(HexMapEdMode->EdModeFillSelectedChunksProperties, true);
-	}
-
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.HAlign(HAlign_Fill)
-		[
-			SNew(SSeparator)
-			.ColorAndOpacity(FSlateColor(FLinearColor::Black))
-		]
-		+ SVerticalBox::Slot()
-		.HAlign(HAlign_Fill)
-		.AutoHeight()
-		[
-			SNew(SExpandableArea)
-			.InitiallyCollapsed(false)
-			.BorderImage(FEditorStyle::GetBrush("ToolBar.Background"))
-			.Padding(8.f)
-			.HeaderContent()
-			[
-				SNew(STextBlock)
-				.ColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
-			.Text(NSLOCTEXT("FillSelectedChunksHeader", "FillSelectedChunksHeader", "Fill Selected Chunks"))
-			]
-			.BodyContent()
-			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				.HAlign(HAlign_Fill)
-				.AutoHeight()
-				.Padding(8.f)
-				[
-					SELF->HexMapEdModeFillSelectedChunksPanel.ToSharedRef()
-				]
-				+ SVerticalBox::Slot()
-				.HAlign(HAlign_Fill)
-				.AutoHeight()
-				[
-					MAKE_FillSelectedChunks_BTN(LOCTEXT("FillHMChunksBTN", "Execute"))
-				]
-			]
-		];
-}
-
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_ClearChunks_SLOT(FHexMapEdToolkit* SELF)
-{
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.HAlign(HAlign_Fill)
-		[
-			SNew(SSeparator)
-			.ColorAndOpacity(FSlateColor(FLinearColor::Black))
-		]
-		+ SVerticalBox::Slot()
-		.HAlign(HAlign_Fill)
-		.AutoHeight()
-		[
-			SNew(SExpandableArea)
-			.InitiallyCollapsed(false)
-			.BorderImage(FEditorStyle::GetBrush("ToolBar.Background"))
-			.Padding(8.f)
-			.HeaderContent()
-			[
-				SNew(STextBlock)
-				.ColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
-				.Text(NSLOCTEXT("ClearSelectedChunksHeader", "ClearSelectedChunksHeader", "Clear Selected Chunks"))
-			]
-			.BodyContent()
-			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				.HAlign(HAlign_Fill)
-				.AutoHeight()
-				[
-					MAKE_ClearSelectedChunks_BTN(LOCTEXT("ClearHMChunksBTN", "Execute"))
+					MAKE_AddRectangle_BTN(LOCTEXT("HM_BTN_AddRectangle", "Add Rectangle"))
 				]
 			]
 		];
@@ -381,11 +274,11 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddTile_SLOT(FHexMapEdToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
-	SELF->HexMapEdModeAddTilePanel = PropertyEditorModule.CreateDetailView(Args);
+	SELF->EdModePanelAddTile = PropertyEditorModule.CreateDetailView(Args);
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
-		SELF->HexMapEdModeAddTilePanel->SetObject(HexMapEdMode->EdModeAddTileProperties, true);
+		SELF->EdModePanelAddTile->SetObject(HexMapEdMode->EdModePropertiesAddTile, true);
 	}
 
 	return SNew(SVerticalBox)
@@ -417,13 +310,13 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddTile_SLOT(FHexMapEdToolkit* SELF)
 				.AutoHeight()
 				.Padding(8.f)
 				[
-					SELF->HexMapEdModeAddTilePanel.ToSharedRef()
+					SELF->EdModePanelAddTile.ToSharedRef()
 				]
 				+ SVerticalBox::Slot()
 				.HAlign(HAlign_Fill)
 				.AutoHeight()
 				[
-					MAKE_AddTile_BTN(LOCTEXT("AddHMTileBTN", "Execute"))
+					MAKE_AddTile_BTN(LOCTEXT("AddHMTileBTN", "Add Tile"))
 				]
 			]
 		];
@@ -433,11 +326,11 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit*
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
-	SELF->HexMapEdModeRandomizeTilesPanel = PropertyEditorModule.CreateDetailView(Args);
+	SELF->EdModePanelRandomizeTiles = PropertyEditorModule.CreateDetailView(Args);
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
-		SELF->HexMapEdModeRandomizeTilesPanel->SetObject(HexMapEdMode->EdModeRandomizeTilesProperties, true);
+		SELF->EdModePanelRandomizeTiles->SetObject(HexMapEdMode->EdModePropertiesRandomizeTiles, true);
 	}
 
 	return SNew(SVerticalBox)
@@ -469,13 +362,13 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit*
 				.AutoHeight()
 				.Padding(8.f)
 			[
-				SELF->HexMapEdModeRandomizeTilesPanel.ToSharedRef()
+				SELF->EdModePanelRandomizeTiles.ToSharedRef()
 			]
 			+ SVerticalBox::Slot()
 			.HAlign(HAlign_Fill)
 			.AutoHeight()
 			[
-				MAKE_RandomizeTiles_BTN(LOCTEXT("RandomizeHMTilesBTN", "Execute"))
+				MAKE_RandomizeTiles_BTN(LOCTEXT("RandomizeHMTilesBTN", "Randomize"))
 			]
 			]
 		];
@@ -485,11 +378,11 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_TilesBatchApplier_SLOT(FHexMapEdToolk
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
-	SELF->HexMapEdModeTilesBatchApplierPanel = PropertyEditorModule.CreateDetailView(Args);
+	SELF->EdModePanelTilesBatchApplier = PropertyEditorModule.CreateDetailView(Args);
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
-		SELF->HexMapEdModeTilesBatchApplierPanel->SetObject(HexMapEdMode->EdModeTileBatchApplierProperties, true);
+		SELF->EdModePanelTilesBatchApplier->SetObject(HexMapEdMode->EdModePropertiesTileBatchApplier, true);
 	}
 
 	return SNew(SVerticalBox)
@@ -521,49 +414,13 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_TilesBatchApplier_SLOT(FHexMapEdToolk
 				.AutoHeight()
 				.Padding(8.f)
 				[
-					SELF->HexMapEdModeTilesBatchApplierPanel.ToSharedRef()
+					SELF->EdModePanelTilesBatchApplier.ToSharedRef()
 				]
 				+ SVerticalBox::Slot()
 				.HAlign(HAlign_Fill)
 				.AutoHeight()
 				[
-					MAKE_TilesBatchApplier_BTN(LOCTEXT("HMTilesBatchApplierBTN", "Execute"))
-				]
-			]
-		];
-}
-
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SelectAllChunks_SLOT(FHexMapEdToolkit* SELF)
-{
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.HAlign(HAlign_Fill)
-		[
-			SNew(SSeparator)
-			.ColorAndOpacity(FSlateColor(FLinearColor::Black))
-		]
-		+ SVerticalBox::Slot()
-		.HAlign(HAlign_Fill)
-		.AutoHeight()
-		[
-			SNew(SExpandableArea)
-			.InitiallyCollapsed(false)
-			.BorderImage(FEditorStyle::GetBrush("ToolBar.Background"))
-			.Padding(8.f)
-			.HeaderContent()
-			[
-				SNew(STextBlock)
-				.ColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
-				.Text(NSLOCTEXT("SelectAllChunksHeader", "SelectAllChunksHeader", "Select All Chunks"))
-			]
-			.BodyContent()
-			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				.HAlign(HAlign_Fill)
-				.AutoHeight()
-				[
-					MAKE_SelectAllChunks_BTN(LOCTEXT("SelectAllHMChunksBTN", "Execute"))
+					MAKE_TilesBatchApplier_BTN(LOCTEXT("HMTilesBatchApplierBTN", "Apply"))
 				]
 			]
 		];
@@ -579,44 +436,24 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SetTileSize_BTN(const FText& Label)
 		.OnClicked_Static(FHexMapEdToolkit::ON_SetTileSize_BTN);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_CreateCircleChunk_BTN(const FText& Label)
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddCircle_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
 		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_CreateCircleChunk_BTN);
+		.OnClicked_Static(FHexMapEdToolkit::ON_AddCircle_BTN);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_CreateRectangleChunk_BTN(const FText& Label)
+TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddRectangle_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
 		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_CreateRectangleChunk_BTN);
-}
-
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_FillSelectedChunks_BTN(const FText& Label)
-{
-	return SNew(SButton)
-		.Text(Label)
-		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
-		.ForegroundColor(FLinearColor::White)
-		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_FillSelectedChunks_BTN);
-}
-
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_ClearSelectedChunks_BTN(const FText& Label)
-{
-	return SNew(SButton)
-		.Text(Label)
-		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
-		.ForegroundColor(FLinearColor::White)
-		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_ClearSelectedChunks_BTN);
+		.OnClicked_Static(FHexMapEdToolkit::ON_AddRectangle_BTN);
 }
 
 TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddTile_BTN(const FText& Label)
@@ -649,194 +486,102 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_TilesBatchApplier_BTN(const FText& La
 		.OnClicked_Static(FHexMapEdToolkit::ON_TilesBatchApplier_BTN);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SelectAllChunks_BTN(const FText& Label)
-{
-	return SNew(SButton)
-		.Text(Label)
-		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
-		.ForegroundColor(FLinearColor::White)
-		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_SelectAllChunks_BTN);
-}
-
-FReply FHexMapEdToolkit::ON_CreateCircleChunk_BTN()
+FReply FHexMapEdToolkit::ON_AddCircle_BTN()
 {
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-	FVector Location = HexMapEdMode->EdModeCreateCircleChunkProperties->Location;
-	if (Location.IsZero())
+	if (HexMapEdMode->EdModePropertiesAddCircle->Tile_BP)
 	{
-		FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
-		FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
-		FVector EditorCameraPosition = ViewportClient->GetViewLocation();
-		float Distance = 3000.f;
-		Location = EditorCameraPosition + EditorCameraDirection * Distance;
-	}
-	
-	UWorld* World = GEditor->GetEditorWorldContext().World();
-
-	GEditor->BeginTransaction(LOCTEXT("CreateHMCircleChunk", "CreateHMCircleChunk"));
-	{
-		AHexMapCircleChunk* Chunk = World->SpawnActor<AHexMapCircleChunk>(Location, FRotator(0.f));
-		Chunk->SetRadius(HexMapEdMode->EdModeCreateCircleChunkProperties->Radius);
-		GEditor->SelectNone(true, true);
-		GEditor->SelectActor(Chunk, true, true);
-
-		if (HexMapEdMode->EdModeCreateCircleChunkProperties->Tile_BP)
+		FVector Location = HexMapEdMode->EdModePropertiesAddCircle->Location;
+		if (Location.IsZero())
 		{
-			TArray<USceneComponent*> ComponentsInRoot;
-			Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
-			for (USceneComponent* ComponentInRoot : ComponentsInRoot)
+			FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
+			FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
+			FVector EditorCameraPosition = ViewportClient->GetViewLocation();
+			float Distance = 3000.f;
+			Location = EditorCameraPosition + EditorCameraDirection * Distance;
+		}
+
+		UWorld* World = GEditor->GetEditorWorldContext().World();
+
+		GEditor->BeginTransaction(LOCTEXT("HM_TRANSITION_AddCircle", "HM_TRANSITION_AddCircle"));
+		{
+			GEditor->SelectNone(true, true);
+			int32 Radius = HexMapEdMode->EdModePropertiesAddCircle->Radius;
+			for (int32 Q = -Radius; Q <= Radius; ++Q)
 			{
-				if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
+				int32 R1 = std::max(-Radius, -Q - Radius);
+				int32 R2 = std::min(Radius, -Q + Radius);
+
+				for (int32 R = R1; R <= R2; R++)
 				{
-					UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
-					if (TileLocationComponent->LinkedTile)
-					{
-						TileLocationComponent->LinkedTile->Destroy();
-						TileLocationComponent->LinkedTile = nullptr;
-					}
-					AHexMapTile* Tile = World->SpawnActor<AHexMapTile>(HexMapEdMode->EdModeCreateCircleChunkProperties->Tile_BP, TileLocationComponent->GetComponentLocation(), FRotator(0.f));
+					FHMCoord HexCoord = FHMCoord::Init(Q, R, -Q - R);
+					FVector SnapLocation = FHMUtilities::ToSnapLocation(World, HexCoord);
+					SnapLocation = FHMUtilities::ToSnapLocation(World, SnapLocation + Location);
+
+					AHMTile* Tile = World->SpawnActor<AHMTile>(HexMapEdMode->EdModePropertiesAddCircle->Tile_BP, SnapLocation, FRotator(0.f));
+					GEditor->SelectActor(Tile, true, true);
 				}
 			}
 		}
-	}
-	GEditor->EndTransaction();
-
-	return FReply::Handled();
-}
-
-FReply FHexMapEdToolkit::ON_CreateRectangleChunk_BTN()
-{
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-	FVector Location = HexMapEdMode->EdModeCreateRectangleChunkProperties->Location;
-	if (Location.IsZero())
-	{
-		FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
-		FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
-		FVector EditorCameraPosition = ViewportClient->GetViewLocation();
-		float Distance = 3000.f;
-		Location = EditorCameraPosition + EditorCameraDirection * Distance;
-	}
-
-	UWorld* World = GEditor->GetEditorWorldContext().World();
-
-	GEditor->BeginTransaction(LOCTEXT("CreateHMRectangleChunk", "CreateHMRectangleChunk"));
-	{
-		AHexMapRectangleChunk* Chunk = World->SpawnActor<AHexMapRectangleChunk>(Location, FRotator(0.f));
-		Chunk->SetSize(HexMapEdMode->EdModeCreateRectangleChunkProperties->SizeX, HexMapEdMode->EdModeCreateRectangleChunkProperties->SizeY);
-		GEditor->SelectNone(true, true);
-		GEditor->SelectActor(Chunk, true, true);
-
-		if (HexMapEdMode->EdModeCreateRectangleChunkProperties->Tile_BP)
-		{
-			TArray<USceneComponent*> ComponentsInRoot;
-			Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
-			for (USceneComponent* ComponentInRoot : ComponentsInRoot)
-			{
-				if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
-				{
-					UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
-					if (TileLocationComponent->LinkedTile)
-					{
-						TileLocationComponent->LinkedTile->Destroy();
-						TileLocationComponent->LinkedTile = nullptr;
-					}
-					AHexMapTile* Tile = World->SpawnActor<AHexMapTile>(HexMapEdMode->EdModeCreateRectangleChunkProperties->Tile_BP, TileLocationComponent->GetComponentLocation(), FRotator(0.f));
-				}
-			}
-		}
-	}
-	GEditor->EndTransaction();
-
-	return FReply::Handled();
-}
-
-FReply FHexMapEdToolkit::ON_FillSelectedChunks_BTN()
-{
-	TArray<AHexMapChunk *> SelectedChunks;
-	GetSelectedChunks(SelectedChunks);
-	if (SelectedChunks.Num() > 0)
-	{
-		FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-		if (HexMapEdMode && HexMapEdMode->EdModeFillSelectedChunksProperties->Tile_BP)
-		{
-			if (EAppReturnType::Yes == FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("HexMapTilesFillMessage", "All previous attached tiles will be removed. Are you sure?")))
-			{
-				UWorld* World = GEditor->GetEditorWorldContext().World();
-				GEditor->BeginTransaction(LOCTEXT("FillHMChunks", "FillHMChunks"));
-				for (AHexMapChunk* Chunk : SelectedChunks)
-				{
-					TArray<USceneComponent*> ComponentsInRoot;
-					Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
-					for (USceneComponent* ComponentInRoot : ComponentsInRoot)
-					{
-						if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
-						{
-							UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
-							if (TileLocationComponent->LinkedTile)
-							{
-								TileLocationComponent->LinkedTile->Destroy();
-								TileLocationComponent->LinkedTile = nullptr;
-							}
-							AHexMapTile* Tile = World->SpawnActor<AHexMapTile>(HexMapEdMode->EdModeFillSelectedChunksProperties->Tile_BP, TileLocationComponent->GetComponentLocation(), FRotator(0.f));
-						}
-					}
-				}
-				GEditor->EndTransaction();
-			}
-		}
-		else
-		{
-			GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, "You need to choose Tile Blueprint at first!");
-		}
+		GEditor->EndTransaction();
 	}
 	else
 	{
-		GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "At least one HexMapChunk should be selected!");
+		GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "Tile Blueprint should be assigned!");
 	}
+
 	return FReply::Handled();
 }
 
-FReply FHexMapEdToolkit::ON_ClearSelectedChunks_BTN()
+FReply FHexMapEdToolkit::ON_AddRectangle_BTN()
 {
-	TArray<AHexMapChunk *> SelectedChunks;
-	GetSelectedChunks(SelectedChunks);
-	if (SelectedChunks.Num() > 0)
+	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+	if (HexMapEdMode->EdModePropertiesAddRectangle->Tile_BP)
 	{
-		if (EAppReturnType::Yes == FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("HexMapTilesFillMessage", "All previous attached tiles will be removed. Are you sure?")))
+		FVector Location = HexMapEdMode->EdModePropertiesAddRectangle->Location;
+		if (Location.IsZero())
 		{
-			GEditor->BeginTransaction(LOCTEXT("ClearHMChunks", "ClearHMChunks"));
-			for (AHexMapChunk* Chunk : SelectedChunks)
+			FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
+			FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
+			FVector EditorCameraPosition = ViewportClient->GetViewLocation();
+			float Distance = 3000.f;
+			Location = EditorCameraPosition + EditorCameraDirection * Distance;
+		}
+
+		UWorld* World = GEditor->GetEditorWorldContext().World();
+
+		GEditor->BeginTransaction(LOCTEXT("HM_TRANSITION_AddRectangle", "HM_TRANSITION_AddRectangle"));
+		{
+			GEditor->SelectNone(true, true);
+			int32 SizeX = HexMapEdMode->EdModePropertiesAddRectangle->SizeX;
+			int32 SizeY = HexMapEdMode->EdModePropertiesAddRectangle->SizeY;
+			for (int32 i = 0; i < SizeX; ++i)
 			{
-				TArray<USceneComponent*> ComponentsInRoot;
-				Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
-				for (USceneComponent* ComponentInRoot : ComponentsInRoot)
+				for (int32 j = 0; j < SizeY; ++j)
 				{
-					if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
-					{
-						UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
-						if (TileLocationComponent->LinkedTile)
-						{
-							TileLocationComponent->LinkedTile->Destroy();
-							TileLocationComponent->LinkedTile = nullptr;
-						}
-					}
+					FHMCoord HexCoord = FHMCoord::QOffsetToCube(FHMCoord::EHMDirection::ODD, FVector2D(i, j));
+					FVector SnapLocation = FHMUtilities::ToSnapLocation(World, HexCoord);
+					SnapLocation = FHMUtilities::ToSnapLocation(World, SnapLocation + Location);
+
+					AHMTile* Tile = World->SpawnActor<AHMTile>(HexMapEdMode->EdModePropertiesAddRectangle->Tile_BP, SnapLocation, FRotator(0.f));
+					GEditor->SelectActor(Tile, true, true);
 				}
 			}
-			GEditor->EndTransaction();
 		}
+		GEditor->EndTransaction();
 	}
 	else
 	{
-		GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "At least one HexMapChunk should be selected!");
+		GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "Tile Blueprint should be assigned!");
 	}
+
 	return FReply::Handled();
 }
 
 FReply FHexMapEdToolkit::ON_AddTile_BTN()
 {
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-	if (HexMapEdMode->EdModeAddTileProperties->Tile_BP)
+	if (HexMapEdMode->EdModePropertiesAddTile->Tile_BP)
 	{
 		FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
 		FVector EditorCameraDirection = ViewportClient->GetViewRotation().Vector();
@@ -848,26 +593,9 @@ FReply FHexMapEdToolkit::ON_AddTile_BTN()
 
 		GEditor->BeginTransaction(LOCTEXT("AddHMTile", "AddHMTile"));
 		{
-			AHexMapCircleChunk* Chunk = World->SpawnActor<AHexMapCircleChunk>(Location, FRotator(0.f));
-			Chunk->SetRadius(0);
 			GEditor->SelectNone(true, true);
-			GEditor->SelectActor(Chunk, true, true);
-
-			TArray<USceneComponent*> ComponentsInRoot;
-			Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
-			for (USceneComponent* ComponentInRoot : ComponentsInRoot)
-			{
-				if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
-				{
-					UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
-					if (TileLocationComponent->LinkedTile)
-					{
-						TileLocationComponent->LinkedTile->Destroy();
-						TileLocationComponent->LinkedTile = nullptr;
-					}
-					AHexMapTile* Tile = World->SpawnActor<AHexMapTile>(HexMapEdMode->EdModeAddTileProperties->Tile_BP, TileLocationComponent->GetComponentLocation(), FRotator(0.f));
-				}
-			}
+			AHMTile* Tile = World->SpawnActor<AHMTile>(HexMapEdMode->EdModePropertiesAddTile->Tile_BP, Location, FRotator(0.f));
+			GEditor->SelectActor(Tile, true, true);
 		}
 		GEditor->EndTransaction();
 	}
@@ -881,31 +609,19 @@ FReply FHexMapEdToolkit::ON_AddTile_BTN()
 
 FReply FHexMapEdToolkit::ON_RandomizeTiles_BTN()
 {
-	TArray<AHexMapChunk *> SelectedChunks;
-	GetSelectedChunks(SelectedChunks);
-	if (SelectedChunks.Num() > 0)
+	TArray<AHMTile*> SelectedTiles;
+	GetSelectedTiles(SelectedTiles);
+	if (SelectedTiles.Num() > 0)
 	{
 		FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-		if (HexMapEdMode && HexMapEdMode->EdModeRandomizeTilesProperties->Randomizer_BP)
+		if (HexMapEdMode && HexMapEdMode->EdModePropertiesRandomizeTiles->Randomizer_BP)
 		{
 			UWorld* World = GEditor->GetEditorWorldContext().World();
-			GEditor->BeginTransaction(LOCTEXT("RandomizeHMTiles", "RandomizeHMTiles"));
-			AHexMapTileRandomizer* Randomizer = World->SpawnActor<AHexMapTileRandomizer>(HexMapEdMode->EdModeRandomizeTilesProperties->Randomizer_BP, FVector(0.f), FRotator(0.f));
-			for (AHexMapChunk* Chunk : SelectedChunks)
+			GEditor->BeginTransaction(LOCTEXT("HM_TRANSITION_Randomize", "HM_TRANSITION_Randomize"));
+			AHMTileRandomizer* Randomizer = World->SpawnActor<AHMTileRandomizer>(HexMapEdMode->EdModePropertiesRandomizeTiles->Randomizer_BP, FVector(0.f), FRotator(0.f));
+			for (AHMTile* Tile : SelectedTiles)
 			{
-				TArray<USceneComponent*> ComponentsInRoot;
-				Chunk->GetRootComponent()->GetChildrenComponents(false, ComponentsInRoot);
-				for (USceneComponent* ComponentInRoot : ComponentsInRoot)
-				{
-					if (ComponentInRoot->IsA(UHexMapTileLocationComponent::StaticClass()))
-					{
-						UHexMapTileLocationComponent* TileLocationComponent = Cast<UHexMapTileLocationComponent>(ComponentInRoot);
-						if (TileLocationComponent->LinkedTile)
-						{
-							Randomizer->Randomize(TileLocationComponent->LinkedTile);
-						}
-					}
-				}
+				Randomizer->Randomize(Tile);
 			}
 			Randomizer->Destroy();
 			GEditor->EndTransaction();
@@ -917,24 +633,24 @@ FReply FHexMapEdToolkit::ON_RandomizeTiles_BTN()
 	}
 	else
 	{
-		GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "At least one HexMapChunk should be selected!");
+		GEditor->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "At least one Tile should be selected!");
 	}
 	return FReply::Handled();
 }
 
 FReply FHexMapEdToolkit::ON_TilesBatchApplier_BTN()
 {
-	TArray<AHexMapTile *> SelectedTiles;
+	TArray<AHMTile*> SelectedTiles;
 	GetSelectedTiles(SelectedTiles);
 	if (SelectedTiles.Num() > 0)
 	{
 		FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-		if (HexMapEdMode && HexMapEdMode->EdModeTileBatchApplierProperties->Applier_BP)
+		if (HexMapEdMode && HexMapEdMode->EdModePropertiesTileBatchApplier->Applier_BP)
 		{
 			UWorld* World = GEditor->GetEditorWorldContext().World();
 			GEditor->BeginTransaction(LOCTEXT("HMTilesBatchApplier", "HMTilesBatchApplier"));
-			AHexMapTileBatchApplier* Applier = World->SpawnActor<AHexMapTileBatchApplier>(HexMapEdMode->EdModeTileBatchApplierProperties->Applier_BP, FVector(0.f), FRotator(0.f));
-			for (AHexMapTile* Tile : SelectedTiles)
+			AHMTileBatchApplier* Applier = World->SpawnActor<AHMTileBatchApplier>(HexMapEdMode->EdModePropertiesTileBatchApplier->Applier_BP, FVector(0.f), FRotator(0.f));
+			for (AHMTile* Tile : SelectedTiles)
 			{
 				Applier->Apply(Tile);
 			}
@@ -958,53 +674,21 @@ FReply FHexMapEdToolkit::ON_SetTileSize_BTN()
 	UWorld* World = GEditor->GetEditorWorldContext().World();
 	GEditor->BeginTransaction(LOCTEXT("SetHMTileSize", "SetHMTileSize"));
 	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
-	AHexMapGrid* Grid = FHex::GetGrid(World);
-	Grid->SetTileSize(HexMapEdMode->EdModeSetTileSizeProperties->TileSize);
+	AHMGrid* Grid = FHMUtilities::GetGrid(World);
+	Grid->OnTileSizeChanged(HexMapEdMode->EdModePropertiesSetTileSize->TileSize);
 	GEditor->EndTransaction();
 	return FReply::Handled();
 }
 
-FReply FHexMapEdToolkit::ON_SelectAllChunks_BTN()
-{
-	UWorld* World = GEditor->GetEditorWorldContext().World();
-	GEditor->SelectNone(true, true);
-
-	for (TActorIterator<AHexMapChunk> It(World); It; ++It)
-	{
-		if (It)
-		{
-			AHexMapChunk* Chunk = *It;
-			if (Chunk)
-			{
-				GEditor->SelectActor(Chunk, true, true);
-			}
-		}
-	}
-	return FReply::Handled();
-}
-
-void FHexMapEdToolkit::GetSelectedChunks(TArray<AHexMapChunk *>& Chunks)
+void FHexMapEdToolkit::GetSelectedTiles(TArray<class AHMTile*>& Tiles)
 {
 	USelection* Selection = GEditor->GetSelectedActors();
 	for (int32 i = 0; i < Selection->Num(); ++i)
 	{
 		UObject* Object = Selection->GetSelectedObject(i);
-		if (Object && Object->IsA(AHexMapChunk::StaticClass()))
+		if (Object && Object->IsA(AHMTile::StaticClass()))
 		{
-			Chunks.Add(Cast<AHexMapChunk>(Object));
-		}
-	}
-}
-
-void FHexMapEdToolkit::GetSelectedTiles(TArray<class AHexMapTile*>& Tiles)
-{
-	USelection* Selection = GEditor->GetSelectedActors();
-	for (int32 i = 0; i < Selection->Num(); ++i)
-	{
-		UObject* Object = Selection->GetSelectedObject(i);
-		if (Object && Object->IsA(AHexMapTile::StaticClass()))
-		{
-			Tiles.Add(Cast<AHexMapTile>(Object));
+			Tiles.Add(Cast<AHMTile>(Object));
 		}
 	}
 }
