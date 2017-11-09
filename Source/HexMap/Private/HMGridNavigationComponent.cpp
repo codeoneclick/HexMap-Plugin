@@ -39,7 +39,7 @@ void UHMGridNavigationComponent::SetupNavigation()
 			Navigation->AddTile(Tile);
 		}
 	}
-	Navigation->UpdateNavigationNodes(true);
+	Navigation->ConstructNavigation(true);
 }
 
 bool UHMGridNavigationComponent::GetPath(const FVector& StartLocation, const FVector& GoalLocation, TArray<FVector>& OutSolution)

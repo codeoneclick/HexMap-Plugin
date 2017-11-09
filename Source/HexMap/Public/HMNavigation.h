@@ -196,7 +196,7 @@ public:
 
 	void AddTile(class AHMTile* Tile);
 	void RemoveTile(class AHMTile* Tile);
-	virtual void UpdateNavigationNodes(bool bReConstruct = false);
+	virtual void ConstructNavigation(bool bReConstruct = false);
 	void SetTileHeight(float TileHeight_);
 	void SetMaxPassableDifferential(float MaxPassableDifferential_);
 

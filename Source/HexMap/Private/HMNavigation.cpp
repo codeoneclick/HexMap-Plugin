@@ -197,7 +197,7 @@ void FHMNavigation::RemoveTile(class AHMTile* Tile)
 	Tiles.Remove(Tile);
 }
 
-void FHMNavigation::UpdateNavigationNodes(bool bReConstruct)
+void FHMNavigation::ConstructNavigation(bool bReConstruct)
 {
 	if (bReConstruct)
 	{
