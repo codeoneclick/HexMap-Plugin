@@ -76,4 +76,46 @@ FVector FHMUtilities::ToSnapLocation(UWorld* World, const FHMCoord& HexCoord)
 	return FVector(Location2D.X, Location2D.Y, 0.f);
 }
 
+FHMCoord FHMUtilities::ToNearestHex(UWorld* World, const FVector& Location)
+{
+	FHMCoord NearestHexCoord = FHMCoord::Init(std::numeric_limits<int32>::max(), std::numeric_limits<int32>::max(), std::numeric_limits<int32>::max());
+	float NearestDistance = std::numeric_limits<float>::max();
+	FVector CurrentLocationIgnoreZ = Location;
+	CurrentLocationIgnoreZ.Z = 0.f;
+	AHMGrid* Grid = FHMUtilities::GetGrid(World);
+	for (auto It : Grid->TilesToLocationsLinkages)
+	{
+		FVector TileLocationIgnoreZ = It.Value->GetActorLocation();
+		TileLocationIgnoreZ.Z = 0.f;
+		float CurrentDistance = FVector::Distance(TileLocationIgnoreZ, CurrentLocationIgnoreZ);
+		if (CurrentDistance < NearestDistance)
+		{
+			NearestDistance = CurrentDistance;
+			NearestHexCoord = FHMCoord::Init(It.Key.X, It.Key.Y, It.Key.Z);
+		}
+	}
+	return NearestHexCoord;
+}
+
+FVector FHMUtilities::ToNearestSnapLocation(UWorld* World, const FVector& Location)
+{
+	FVector NearestLocation = FVector(std::numeric_limits<float>::max());
+	float NearestDistance = std::numeric_limits<float>::max();
+	FVector CurrentLocationIgnoreZ = Location;
+	CurrentLocationIgnoreZ.Z = 0.f;
+	AHMGrid* Grid = FHMUtilities::GetGrid(World);
+	for (auto It : Grid->TilesToLocationsLinkages)
+	{
+		FVector TileLocationIgnoreZ = It.Value->GetActorLocation();
+		TileLocationIgnoreZ.Z = 0.f;
+		float CurrentDistance = FVector::Distance(TileLocationIgnoreZ, CurrentLocationIgnoreZ);
+		if (CurrentDistance < NearestDistance)
+		{
+			NearestDistance = CurrentDistance;
+			NearestLocation = It.Value->GetActorLocation();
+		}
+	}
+	return NearestLocation;
+}
+
 

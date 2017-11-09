@@ -31,4 +31,7 @@ public:
 	static FHMCoord ToHex(UWorld* World, const FVector& Location);
 	static FVector ToSnapLocation(UWorld* World, const FVector& Location);
 	static FVector ToSnapLocation(UWorld* World, const FHMCoord& HexCoord);
+
+	static FHMCoord ToNearestHex(UWorld* World, const FVector& Location);
+	static FVector ToNearestSnapLocation(UWorld* World, const FVector& Location);
 };

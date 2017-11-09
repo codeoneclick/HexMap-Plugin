@@ -46,8 +46,8 @@ bool UHMGridNavigationComponent::GetPath(const FVector& StartLocation, const FVe
 {
 	AHMGrid* Grid = FHMUtilities::GetGrid(GetWorld());
 	bool bResult = false;
-	FHMCoord StartHexCoord = FHMUtilities::ToHex(GetWorld(), StartLocation);
-	FHMCoord GoalHexCoord = FHMUtilities::ToHex(GetWorld(), GoalLocation);
+	FHMCoord StartHexCoord = FHMUtilities::ToNearestHex(GetWorld(), StartLocation);
+	FHMCoord GoalHexCoord = FHMUtilities::ToNearestHex(GetWorld(), GoalLocation);
 
 	AHMTile** StartTile = Grid->TilesToLocationsLinkages.Find(StartHexCoord.ToVec());
 	AHMTile** GoalTile = Grid->TilesToLocationsLinkages.Find(GoalHexCoord.ToVec());
