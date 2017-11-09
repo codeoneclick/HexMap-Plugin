@@ -11,7 +11,7 @@ AHMGrid::AHMGrid()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	Layout = FHMLayout::Init(FHMLayout::Flat, FVector2D(TileSize, TileSize), FVector2D(TileSize * .5f, TileSize * .5f));
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HMGrid—omponent"));;
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HMGridComponent"));;
 
 	GeometryComponent = CreateDefaultSubobject<UHMMeshComponent>(TEXT("HMGridMeshComponent"));
 	GeometryComponent->SetupAttachment(GetRootComponent());
