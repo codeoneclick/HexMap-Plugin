@@ -34,6 +34,8 @@ void AHMTile::PostInitializeComponents()
 	}
 }
 
+#if WITH_EDITOR
+
 void AHMTile::OnEditorTick(float DeltaTime)
 {
 	if (bShouldBeAttached)
@@ -63,6 +65,8 @@ void AHMTile::OnEditorTick(float DeltaTime)
 		}
 	}
 }
+
+#endif
 
 void AHMTile::OnConstruction(const FTransform& Transform)
 {
