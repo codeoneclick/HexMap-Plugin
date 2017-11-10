@@ -29,5 +29,5 @@ public:
 	float MaxPassableDifferential = 55.f;
 
 	virtual void SetupNavigation();
-	bool GetPath(const FVector& StartLocation, const FVector& GoalLocation, TArray<FVector>& OutSolution);
+	bool GetPath(const FVector& StartLocation, const FVector& GoalLocation, TArray<FVector>& OutSolution, int32 SpreadingRadius = 0);
 };
