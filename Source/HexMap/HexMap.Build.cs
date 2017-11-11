@@ -23,6 +23,7 @@ public class HexMap : ModuleRules
                 "RenderCore",
                 "ShaderCore",
                 "RHI",
+                "AIModule",
                 "PropertyEditor",
                 "WorkspaceMenuStructure",
                 "UnrealEd",
