@@ -132,8 +132,11 @@ bool UHMPawnNavigationComponent::GetPath(const FVector& GoalLocation)
 	if (bIsHasSolution && !bIsUseSamePath)
 	{
 		LastGoalLocation = GoalLocation;
-		Solution[0].X = GoalLocation.X;
-		Solution[0].Y = GoalLocation.Y;
+		if (FHMCoord::Compare(FHMUtilities::ToNearestHex(GetWorld(), GoalLocation), FHMUtilities::ToNearestHex(GetWorld(), Solution[0])))
+		{
+			Solution[0].X = GoalLocation.X;
+			Solution[0].Y = GoalLocation.Y;
+		}
 	}
 	return bIsHasSolution;
 }
