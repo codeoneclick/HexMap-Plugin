@@ -180,6 +180,7 @@ void UHMPawnNavigationComponent::UpdateSpline(bool bVisible)
 		{
 			SplineComponent->RemoveSplinePoint(0, true);
 		}
+		SplineComponent->SetVisibility(bVisible, true);
 	}
 	if (!bVisible)
 	{
