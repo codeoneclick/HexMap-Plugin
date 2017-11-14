@@ -170,6 +170,14 @@ bool UHMPawnNavigationComponent::MoveToLocation(AController* Controller, const F
 	return bResult;
 }
 
+bool UHMPawnNavigationComponent::MoveToActor(AController* Controller, AActor* Actor)
+{
+	FVector GoalLocation = Actor->GetActorLocation();
+	bool bResult = GetPath(GoalLocation);
+	PawnController = Controller;
+	return bResult;
+}
+
 void UHMPawnNavigationComponent::UpdateSpline(bool bVisible)
 {
 	AActor* Owner = GetOwner();

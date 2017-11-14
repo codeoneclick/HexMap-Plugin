@@ -5,8 +5,6 @@
 #include "HMGrid.h"
 #include "HMMeshComponent.h"
 
-const int32 AHMGrid::NumSubdivisions = 6;
-
 AHMGrid::AHMGrid()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -94,14 +92,14 @@ void AHMGrid::UpdateTilesVisual()
 				if (!TrianglesKeys.Contains(NeighbourTileHexCoord.ToVec()))
 				{
 					FVector2D Location2D = FHMCoord::ToLocation(Layout, NeighbourTileHexCoord);
-					AddHexTileGeometry(Location2D, VisualTileSize, Triangles);
+					UHMMeshComponent::AddHexTileGeometry(Location2D, VisualTileSize, Triangles);
 					TrianglesKeys.Add(NeighbourTileHexCoord.ToVec());
 				}
 			}
 			if (!TrianglesKeys.Contains(HexCoord.ToVec()))
 			{
 				FVector2D Location2D = FHMCoord::ToLocation(Layout, HexCoord);
-				AddHexTileGeometry(Location2D, VisualTileSize, Triangles);
+				UHMMeshComponent::AddHexTileGeometry(Location2D, VisualTileSize, Triangles);
 				TrianglesKeys.Add(HexCoord.ToVec());
 			}
 		}
@@ -112,44 +110,6 @@ void AHMGrid::UpdateTilesVisual()
 void AHMGrid::UpdateTilesLogic()
 {
 
-}
-
-void AHMGrid::AddHexTileGeometry(const FVector2D& Location2D, float Size, TArray<struct FHMMeshTriangle>& Triangles)
-{
-	FVector HexTileCenter = FVector(Location2D.X, Location2D.Y, 0.f);
-
-	TArray<FVector> HexTileVertices;
-	TArray<FVector2D> HexTileTexcoords;
-	for (float Angle = 0.f; Angle <= FMath::DegreesToRadians(360.f); Angle += (FMath::DegreesToRadians(360.f) / NumSubdivisions))
-	{
-		HexTileVertices.Add(FVector(Size * cosf(Angle) + Location2D.X, Size * sinf(Angle) + Location2D.Y, 0.f));
-		HexTileTexcoords.Add(FVector2D((cosf(Angle) + 1.f) * .5f, (sinf(Angle) + 1.f) * .5f));
-	}
-
-	FHMMeshTriangle Triangle;
-	Triangle.Vertices.SetNum(3);
-	int32 HexTileVerticesIndex = 0;
-	for (int32 i = 0; i < NumSubdivisions; ++i)
-	{
-		Triangle.Vertices[0].Position = HexTileCenter;
-		Triangle.Vertices[0].U = .5f;
-		Triangle.Vertices[0].V = .5f;
-		HexTileVerticesIndex++;
-		Triangle.Vertices[1].Position = HexTileVertices[HexTileVerticesIndex];
-		Triangle.Vertices[1].U = HexTileTexcoords[HexTileVerticesIndex].X;
-		Triangle.Vertices[1].V = HexTileTexcoords[HexTileVerticesIndex].Y;
-		if (HexTileVerticesIndex >= HexTileVertices.Num())
-		{
-			HexTileVerticesIndex = 0;
-		}
-		HexTileVerticesIndex--;
-		Triangle.Vertices[2].Position = HexTileVertices[HexTileVerticesIndex];
-		Triangle.Vertices[2].U = HexTileTexcoords[HexTileVerticesIndex].X;
-		Triangle.Vertices[2].V = HexTileTexcoords[HexTileVerticesIndex].Y;
-		HexTileVerticesIndex++;
-
-		Triangles.Add(Triangle);
-	}
 }
 
 void AHMGrid::OnTileSizeChanged(float TileSize_)

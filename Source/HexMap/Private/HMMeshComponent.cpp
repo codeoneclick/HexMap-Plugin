@@ -5,6 +5,8 @@
 #include "PhysicsEngine/BodySetup.h"
 #include "HMMeshComponent.h"
 
+const int32 UHMMeshComponent::NumSubdivisions = 6;
+
 class FHMVBO : public FVertexBuffer
 {
 public:
@@ -14,8 +16,9 @@ public:
 	virtual void InitRHI() override
 	{
 		FRHIResourceCreateInfo CreateInfo;
-		VertexBufferRHI = RHICreateVertexBuffer(Vertices.Num() * sizeof(FDynamicMeshVertex), BUF_Static, CreateInfo);
-		void* Buffer = RHILockVertexBuffer(VertexBufferRHI, 0, Vertices.Num() * sizeof(FDynamicMeshVertex), RLM_WriteOnly);
+		void* Buffer = nullptr;
+		VertexBufferRHI = RHICreateAndLockVertexBuffer(Vertices.Num() * sizeof(FDynamicMeshVertex), BUF_Static, CreateInfo, Buffer);
+
 		FMemory::Memcpy(Buffer, Vertices.GetData(), Vertices.Num() * sizeof(FDynamicMeshVertex));
 		RHIUnlockVertexBuffer(VertexBufferRHI);
 	}
@@ -30,8 +33,9 @@ public:
 	virtual void InitRHI() override
 	{
 		FRHIResourceCreateInfo CreateInfo;
-		IndexBufferRHI = RHICreateIndexBuffer(sizeof(int32), Indices.Num() * sizeof(int32), BUF_Static, CreateInfo);
-		void* Buffer = RHILockIndexBuffer(IndexBufferRHI, 0, Indices.Num() * sizeof(int32), RLM_WriteOnly);
+		void* Buffer = nullptr;
+		IndexBufferRHI = RHICreateAndLockIndexBuffer(sizeof(int32), Indices.Num() * sizeof(int32), BUF_Static, CreateInfo, Buffer);
+		
 		FMemory::Memcpy(Buffer, Indices.GetData(), Indices.Num() * sizeof(int32));
 		RHIUnlockIndexBuffer(IndexBufferRHI);
 	}
@@ -41,21 +45,38 @@ class FHMVertexFactory : public FLocalVertexFactory
 {
 public:
 
+	void Init_RenderThread(const FHMVBO* VertexBuffer)
+	{
+		check(IsInRenderingThread());
+
+		FDataType Declaration;
+		Declaration.PositionComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, Position, VET_Float3);
+		Declaration.TextureCoordinates.Add(
+			FVertexStreamComponent(VertexBuffer, STRUCT_OFFSET(FDynamicMeshVertex, TextureCoordinate), sizeof(FDynamicMeshVertex), VET_Float2)
+		);
+		Declaration.TangentBasisComponents[0] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, TangentX, VET_PackedNormal);
+		Declaration.TangentBasisComponents[1] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, TangentZ, VET_PackedNormal);
+		Declaration.ColorComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, Color, VET_Color);
+
+		SetData(Declaration);
+	}
+
 	void Init(const FHMVBO* VertexBuffer)
 	{
-		ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
-			InitHMVertexFactory,
-			FHMVertexFactory*, VertexFactory, this,
-			const FHMVBO*, VertexBuffer, VertexBuffer,
-			{
-				FDataType Declaration;
-				Declaration.PositionComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, Position, VET_Float3);
-				Declaration.TextureCoordinates.Add(FVertexStreamComponent(VertexBuffer, STRUCT_OFFSET(FDynamicMeshVertex, TextureCoordinate), sizeof(FDynamicMeshVertex), VET_Float2));
-				Declaration.TangentBasisComponents[0] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, TangentX, VET_PackedNormal);
-				Declaration.TangentBasisComponents[1] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, TangentZ, VET_PackedNormal);
-				Declaration.ColorComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, Color, VET_Color);
-				VertexFactory->SetData(Declaration);
-			});
+		if (IsInRenderingThread())
+		{
+			Init_RenderThread(VertexBuffer);
+		}
+		else
+		{
+			ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
+				InitHMVertexFactory,
+				FHMVertexFactory*, VertexFactory, this,
+				const FHMVBO*, VertexBuffer, VertexBuffer,
+				{
+					VertexFactory->Init_RenderThread(VertexBuffer);
+				});
+		}
 	}
 };
 
@@ -113,18 +134,18 @@ public:
 
 	virtual void GetDynamicMeshElements(const TArray<const FSceneView*>& Views, const FSceneViewFamily& ViewFamily, uint32 VisibilityMap, FMeshElementCollector& Collector) const override
 	{
-		QUICK_SCOPE_CYCLE_COUNTER(STAT_ProceduralMeshSceneProxy_GetDynamicMeshElements);
+		QUICK_SCOPE_CYCLE_COUNTER(STAT_CustomMeshSceneProxy_GetDynamicMeshElements);
 
 		const bool bWireframe = AllowDebugViewmodes() && ViewFamily.EngineShowFlags.Wireframe;
 
 		auto WireframeMaterialInstance = new FColoredMaterialRenderProxy(
-			GEngine->WireframeMaterial ? GEngine->WireframeMaterial->GetRenderProxy(IsSelected()) : nullptr,
+			GEngine->WireframeMaterial ? GEngine->WireframeMaterial->GetRenderProxy(IsSelected()) : NULL,
 			FLinearColor(0, 0.5f, 1.f)
 		);
 
 		Collector.RegisterOneFrameMaterialProxy(WireframeMaterialInstance);
 
-		FMaterialRenderProxy* MaterialProxy = nullptr;
+		FMaterialRenderProxy* MaterialProxy = NULL;
 		if (bWireframe)
 		{
 			MaterialProxy = WireframeMaterialInstance;
@@ -166,6 +187,9 @@ public:
 		Result.bDrawRelevance = IsShown(View);
 		Result.bShadowRelevance = IsShadowCast(View);
 		Result.bDynamicRelevance = true;
+		Result.bRenderInMainPass = ShouldRenderInMainPass();
+		Result.bUsesLightingChannels = GetLightingChannelMask() != GetDefaultLightingChannelMask();
+		Result.bRenderCustomDepth = ShouldRenderCustomDepth();
 		MaterialRelevance.SetPrimitiveViewRelevance(Result);
 		return Result;
 	}
@@ -175,15 +199,9 @@ public:
 		return !MaterialRelevance.bDisableDepthTest;
 	}
 
-	virtual uint32 GetMemoryFootprint() const
-	{
-		return(sizeof(*this) + GetAllocatedSize());
-	}
+	virtual uint32 GetMemoryFootprint(void) const override { return(sizeof(*this) + GetAllocatedSize()); }
 
-	uint32 GetAllocatedSize(void) const
-	{
-		return(FPrimitiveSceneProxy::GetAllocatedSize());
-	}
+	uint32 GetAllocatedSize(void) const { return(FPrimitiveSceneProxy::GetAllocatedSize()); }
 
 private:
 
@@ -195,23 +213,37 @@ private:
 	FMaterialRelevance MaterialRelevance;
 };
 
+UHMMeshComponent::UHMMeshComponent(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	PrimaryComponentTick.bCanEverTick = false;
+
+	SetCollisionProfileName(UCollisionProfile::BlockAllDynamic_ProfileName);
+}
+
+
 void UHMMeshComponent::SetTriangles(const TArray<FHMMeshTriangle>& aTriangles)
 {
 	Triangles = aTriangles;
-	UpdateCollision();
+
 	MarkRenderStateDirty();
+	UpdateBounds();
 }
 
 void UHMMeshComponent::AddTriangles(const TArray<FHMMeshTriangle>& aTriangles)
 {
 	Triangles.Append(aTriangles);
+
 	MarkRenderStateDirty();
+	UpdateBounds();
 }
 
 void UHMMeshComponent::ClearTriangles()
 {
 	Triangles.Reset();
+
 	MarkRenderStateDirty();
+	UpdateBounds();
 }
 
 FPrimitiveSceneProxy* UHMMeshComponent::CreateSceneProxy()
@@ -260,55 +292,43 @@ FBoxSphereBounds UHMMeshComponent::CalcBounds(const FTransform & LocalToWorld) c
 	}
 }
 
-bool UHMMeshComponent::GetPhysicsTriMeshData(struct FTriMeshCollisionData* CollisionData, bool InUseAllTriData)
+void UHMMeshComponent::AddHexTileGeometry(const FVector2D& Location2D, float Size, TArray<struct FHMMeshTriangle>& Triangles)
 {
-	FTriIndices Triangle;
-	for (int32 i = 0; i < Triangles.Num(); i++)
-	{
-		const FHMMeshTriangle& CurrentTriangle = Triangles[i];
+	FVector HexTileCenter = FVector(Location2D.X, Location2D.Y, 0.f);
 
-		Triangle.v0 = CollisionData->Vertices.Add(CurrentTriangle.Vertices[0].Position);
-		Triangle.v1 = CollisionData->Vertices.Add(CurrentTriangle.Vertices[1].Position);
-		Triangle.v2 = CollisionData->Vertices.Add(CurrentTriangle.Vertices[2].Position);
-		CollisionData->Indices.Add(Triangle);
-		CollisionData->MaterialIndices.Add(i);
+	TArray<FVector> HexTileVertices;
+	TArray<FVector2D> HexTileTexcoords;
+	for (float Angle = 0.f; Angle <= FMath::DegreesToRadians(360.f); Angle += (FMath::DegreesToRadians(360.f) / NumSubdivisions))
+	{
+		HexTileVertices.Add(FVector(Size * cosf(Angle) + Location2D.X, Size * sinf(Angle) + Location2D.Y, 0.f));
+		HexTileTexcoords.Add(FVector2D((cosf(Angle) + 1.f) * .5f, (sinf(Angle) + 1.f) * .5f));
 	}
-	CollisionData->bFlipNormals = true;
-	return true;
-}
 
-bool UHMMeshComponent::ContainsPhysicsTriMeshData(bool InUseAllTriData) const
-{
-	return (Triangles.Num() > 0);
-}
-
-void UHMMeshComponent::UpdateBodySetup()
-{
-	if (ModelBodySetup == NULL)
+	FHMMeshTriangle Triangle;
+	Triangle.Vertices.SetNum(3);
+	int32 HexTileVerticesIndex = 0;
+	for (int32 i = 0; i < NumSubdivisions; ++i)
 	{
-		ModelBodySetup = NewObject<UBodySetup>(this);
-		ModelBodySetup->CollisionTraceFlag = CTF_UseComplexAsSimple;
-		ModelBodySetup->bMeshCollideAll = true;
-	}
-}
+		Triangle.Vertices[0].Position = HexTileCenter;
+		Triangle.Vertices[0].U = .5f;
+		Triangle.Vertices[0].V = .5f;
+		HexTileVerticesIndex++;
+		Triangle.Vertices[1].Position = HexTileVertices[HexTileVerticesIndex];
+		Triangle.Vertices[1].U = HexTileTexcoords[HexTileVerticesIndex].X;
+		Triangle.Vertices[1].V = HexTileTexcoords[HexTileVerticesIndex].Y;
+		if (HexTileVerticesIndex >= HexTileVertices.Num())
+		{
+			HexTileVerticesIndex = 0;
+		}
+		HexTileVerticesIndex--;
+		Triangle.Vertices[2].Position = HexTileVertices[HexTileVerticesIndex];
+		Triangle.Vertices[2].U = HexTileTexcoords[HexTileVerticesIndex].X;
+		Triangle.Vertices[2].V = HexTileTexcoords[HexTileVerticesIndex].Y;
+		HexTileVerticesIndex++;
 
-void UHMMeshComponent::UpdateCollision()
-{
-	if (bPhysicsStateCreated)
-	{
-		DestroyPhysicsState();
-		UpdateBodySetup();
-		CreatePhysicsState();
-
-		ModelBodySetup->InvalidatePhysicsData();
-		ModelBodySetup->CreatePhysicsMeshes();
+		Triangles.Add(Triangle);
 	}
 }
 
-UBodySetup* UHMMeshComponent::GetBodySetup()
-{
-	UpdateBodySetup();
-	return ModelBodySetup;
-}
 
 

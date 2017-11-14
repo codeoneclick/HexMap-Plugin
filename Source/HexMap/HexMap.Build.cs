@@ -10,7 +10,7 @@ public class HexMap : ModuleRules
             "Core",
             "CoreUObject",
             "Engine",
-            "RenderCore",
+            "RenderCore"
         });
 
         if (UEBuildConfiguration.bBuildEditor == true)

@@ -21,14 +21,10 @@ private:
 
 	friend class AHMTile;
 
-	static const int32 NumSubdivisions;
-
 	void UpdateTiles();
 
 	void UpdateTilesLogic();
 	void UpdateTilesVisual();
-
-	void AddHexTileGeometry(const FVector2D& Location2D, float Size, TArray<struct FHMMeshTriangle>& Triangles);
 
 protected:
 
@@ -42,8 +38,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY()
-	class UHMMeshComponent* GeometryComponent;
+	UPROPERTY(VisibleAnywhere)
+	FHMLayout Layout;
 
 	UPROPERTY(EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
 	float TileSize = 200.f;
@@ -51,8 +47,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
 	float TileHeight = 400.f;
 
-	UPROPERTY(VisibleAnywhere)
-	FHMLayout Layout;
+	UPROPERTY()
+	class UHMMeshComponent* GeometryComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<class AHMTile*> Tiles;

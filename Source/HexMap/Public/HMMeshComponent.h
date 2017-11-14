@@ -33,10 +33,11 @@ struct FHMMeshTriangle
 	TArray<FHMMeshVertex> Vertices;
 };
 
-UCLASS()
-class HEXMAP_API UHMMeshComponent : public UMeshComponent, public IInterface_CollisionDataProvider
+UCLASS(hidecategories = (Object, LOD, Physics, Collision), editinlinenew, meta = (BlueprintSpawnableComponent), ClassGroup = Rendering)
+class HEXMAP_API UHMMeshComponent : public UMeshComponent
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
+
 private:
 
 	friend class FHMMeshSceneProxy;
@@ -44,26 +45,17 @@ private:
 
 protected:
 
+	virtual FPrimitiveSceneProxy* CreateSceneProxy() override;
+	virtual int32 GetNumMaterials() const override;
 	virtual FBoxSphereBounds CalcBounds(const FTransform & LocalToWorld) const override;
 
 public:
+
+	static const int32 NumSubdivisions;
 
 	void SetTriangles(const TArray<FHMMeshTriangle>& Triangles);
 	void AddTriangles(const TArray<FHMMeshTriangle>& Triangles);
 	void ClearTriangles();
 
-	virtual bool GetPhysicsTriMeshData(struct FTriMeshCollisionData* CollisionData, bool InUseAllTriData) override;
-	virtual bool ContainsPhysicsTriMeshData(bool InUseAllTriData) const override;
-	virtual bool WantsNegXTriMesh() override { return false; }
-
-	virtual FPrimitiveSceneProxy* CreateSceneProxy() override;
-	virtual class UBodySetup* GetBodySetup() override;
-
-	virtual int32 GetNumMaterials() const override;
-
-	void UpdateBodySetup();
-	void UpdateCollision();
-
-	UPROPERTY(EditAnywhere)
-	class UBodySetup* ModelBodySetup;
+	static void AddHexTileGeometry(const FVector2D& Location2D, float Size, TArray<struct FHMMeshTriangle>& Triangles);
 };

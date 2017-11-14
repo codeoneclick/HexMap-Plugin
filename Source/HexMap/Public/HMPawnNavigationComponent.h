@@ -81,4 +81,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool MoveToLocation(AController* Controller, const FVector& GoalLocation);
+
+	UFUNCTION(BlueprintCallable)
+	bool MoveToActor(AController* Controller, AActor* Actor);
 };
