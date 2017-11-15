@@ -6,6 +6,7 @@
 #include "HMGrid.h"
 #include "HMTilePropertiesComponent.h"
 #include "HMTile.h"
+#include "Editor.h"
 
 AHMTile::AHMTile()
 {
@@ -172,9 +173,22 @@ bool AHMTile::CanBeSnapped()
 
 	FVector CurrentLocation = GetActorLocation();
 	FHMCoord HexCoord = FHMUtilities::ToHex(GetWorld(), CurrentLocation);
-
 	AHMTile** Tile = Grid->TilesToLocationsLinkages.Find(HexCoord.ToVec());
-	return !(Tile != nullptr && (*Tile) != this);
+	bool bCanBeSnapped = !(Tile != nullptr && (*Tile) != this);
+
+	if (!bCanBeSnapped)
+	{
+		USelection* Selection = GEditor->GetSelectedActors();
+		for (int32 i = 0; i < Selection->Num(); ++i)
+		{
+			if (Selection->GetSelectedObject(i) == (*Tile))
+			{
+				bCanBeSnapped = true;
+				break;
+			}
+		}
+	}
+	return bCanBeSnapped;
 }
 
 void AHMTile::OnSnapError(bool bAttached_)
