@@ -41,8 +41,25 @@ void UHMActorPlacementComponent::OnChildAttached(USceneComponent* ChildComponent
 		PlacementComponent->RootComponent->SetMaterial(0, MutableMaterial);
 		PlacementComponent->RootComponent->SetVisibility(true);
 	}
+	CalculatePlacementsLocations();
+}
 
+void UHMActorPlacementComponent::OnChildDetached(USceneComponent* ChildComponent)
+{
+	Super::OnChildDetached(ChildComponent);
+	UHMActorPlacementComponent* PlacementComponent = Cast<UHMActorPlacementComponent>(ChildComponent);
+	if (PlacementComponent)
+	{
+		AttachedPlacements.Remove(PlacementComponent);
+	}
+	CalculatePlacementsLocations();
+}
+
+void UHMActorPlacementComponent::CalculatePlacementsLocations()
+{
+	PlacementsLocations.Empty();
 	Layout = FHMLayout::Init(FHMLayout::Flat, FVector2D(TileSize, TileSize), FVector2D(TileSize * .5f, TileSize * .5f));
+	UHMActorPlacementComponent* PlacementComponent = nullptr;
 	int32 PlacementIdx = 0;
 
 	if (PlacementMode == EPlacementModeEnum::PM_CIRCLE)
@@ -52,7 +69,7 @@ void UHMActorPlacementComponent::OnChildAttached(USceneComponent* ChildComponent
 			int32 R1 = std::max(-Radius, -Q - Radius);
 			int32 R2 = std::min(Radius, -Q + Radius);
 			PlacementComponent = nullptr;
-			
+
 			for (int32 R = R1; R <= R2; R++)
 			{
 				FHMCoord HexCoord = FHMCoord::Init(Q, R, -Q - R);
@@ -67,6 +84,7 @@ void UHMActorPlacementComponent::OnChildAttached(USceneComponent* ChildComponent
 					CurrentPlacementLocation.X = Location2D.X;
 					CurrentPlacementLocation.Y = Location2D.Y;
 					PlacementComponent->SetRelativeLocation(CurrentPlacementLocation);
+					PlacementsLocations.Add(PlacementComponent->GetComponentLocation());
 				}
 			}
 		}
@@ -90,26 +108,11 @@ void UHMActorPlacementComponent::OnChildAttached(USceneComponent* ChildComponent
 					CurrentPlacementLocation.X = Location2D.X;
 					CurrentPlacementLocation.Y = Location2D.Y;
 					PlacementComponent->SetRelativeLocation(CurrentPlacementLocation);
+					PlacementsLocations.Add(PlacementComponent->GetComponentLocation());
 				}
 			}
 		}
 	}
-}
-
-void UHMActorPlacementComponent::OnChildDetached(USceneComponent* ChildComponent)
-{
-	Super::OnChildDetached(ChildComponent);
-	UHMActorPlacementComponent* PlacementComponent = Cast<UHMActorPlacementComponent>(ChildComponent);
-	if (PlacementComponent)
-	{
-		AttachedPlacements.Remove(PlacementComponent);
-	}
-	CalculatePlacementsLocations();
-}
-
-void UHMActorPlacementComponent::CalculatePlacementsLocations()
-{
-
 }
 
 void UHMActorPlacementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

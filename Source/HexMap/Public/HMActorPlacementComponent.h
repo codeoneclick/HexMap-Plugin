@@ -65,4 +65,7 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	class UStaticMesh* Mesh = nullptr;
+
+	UPROPERTY()
+	TArray<FVector> PlacementsLocations;
 };

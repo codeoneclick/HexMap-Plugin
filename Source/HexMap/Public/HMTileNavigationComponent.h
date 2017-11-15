@@ -26,5 +26,5 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool bIsPassable = true;
 
-	virtual bool IsPassable(class UHMPawnNavigationComponent* PawnNavigationComponent) const;
+	virtual bool IsPassable(class UHMActorNavigationComponent* ActorNavigationComponent) const;
 };

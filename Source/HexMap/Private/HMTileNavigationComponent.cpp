@@ -18,7 +18,7 @@ void UHMTileNavigationComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UHMTileNavigationComponent::IsPassable(class UHMPawnNavigationComponent* PawnNavigationComponent) const
+bool UHMTileNavigationComponent::IsPassable(class UHMActorNavigationComponent* ActorNavigationComponent) const
 {
 	return bIsPassable;
 }
