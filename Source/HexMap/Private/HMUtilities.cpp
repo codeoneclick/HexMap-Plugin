@@ -97,7 +97,7 @@ FHMCoord FHMUtilities::ToNearestHex(UWorld* World, const FVector& Location)
 	return NearestHexCoord;
 }
 
-FVector FHMUtilities::ToNearestSnapLocation(UWorld* World, const FVector& Location)
+FVector FHMUtilities::ToNearestSnapLocation(UWorld* World, const FVector& Location, bool bZIncludeTileHeight)
 {
 	FVector NearestLocation = FVector(std::numeric_limits<float>::max());
 	float NearestDistance = std::numeric_limits<float>::max();
@@ -113,6 +113,10 @@ FVector FHMUtilities::ToNearestSnapLocation(UWorld* World, const FVector& Locati
 		{
 			NearestDistance = CurrentDistance;
 			NearestLocation = It.Value->GetActorLocation();
+			if (bZIncludeTileHeight)
+			{
+				NearestLocation.Z += Grid->TileHeight;
+			}
 		}
 	}
 	return NearestLocation;

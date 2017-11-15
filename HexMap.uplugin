@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "HexMap",
-	"Description": "Hex Grid Map Plugin",
+	"Description": "Hex Map Plugin",
 	"Category": "Terrain",
 	"CreatedBy": "Serhii Serhiiv",
 	"CreatedByURL": "s.serhiiv@gmail.com",

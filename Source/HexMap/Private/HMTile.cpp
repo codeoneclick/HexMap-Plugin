@@ -7,6 +7,8 @@
 #include "HMTilePropertiesComponent.h"
 #include "HMTile.h"
 #include "Editor.h"
+#include "EditorModeManager.h"
+#include "FHexMapEdMode.h"
 
 AHMTile::AHMTile()
 {
