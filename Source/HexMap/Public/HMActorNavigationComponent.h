@@ -16,16 +16,16 @@ public:
 	UHMActorNavigationComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UMaterialInterface* DebugNavigationMaterial;
+	class UMaterialInterface* DebugNavigationMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UStaticMesh* DebugNavigationMesh;
+	class UStaticMesh* DebugNavigationMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float SplineInterval = 50.f;
+	float SplineInterval = 50.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float SplineZOffset = 50.f;
+	float SplineZOffset = 50.f;
 
 	TArray<FVector> Solution;
 	FVector LastGoalLocation;
@@ -33,7 +33,7 @@ public:
 	AController* PawnController = nullptr;
 
 	virtual void BeginPlay() override;
-
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 	virtual void UpdateSpline(bool bVisible);
 
 public:

@@ -298,3 +298,19 @@ void UHMActorNavigationComponent::UpdateSpline(bool bVisible)
 	}
 }
 
+void UHMActorNavigationComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+	for (AHMTile* Tile : CapturedTiles)
+	{
+		if (Tile)
+		{
+			UHMTileNavigationComponent* TileNavigationComponent = Tile->FindComponentByClass<UHMTileNavigationComponent>();
+			if (TileNavigationComponent)
+			{
+				TileNavigationComponent->RemoveNavigationReferences();
+			}
+		}
+	}
+}
+

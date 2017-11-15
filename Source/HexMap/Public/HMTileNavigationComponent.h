@@ -27,4 +27,5 @@ public:
 	bool bIsPassable = true;
 
 	virtual bool IsPassable(class UHMActorNavigationComponent* ActorNavigationComponent) const;
+	virtual void RemoveNavigationReferences();
 };

@@ -23,3 +23,8 @@ bool UHMTileNavigationComponent::IsPassable(class UHMActorNavigationComponent* A
 	return bIsPassable;
 }
 
+void UHMTileNavigationComponent::RemoveNavigationReferences()
+{
+
+}
+
