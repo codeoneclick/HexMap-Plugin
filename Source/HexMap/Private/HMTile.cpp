@@ -183,6 +183,8 @@ bool AHMTile::CanBeSnapped()
 	AHMTile** Tile = Grid->TilesToLocationsLinkages.Find(HexCoord.ToVec());
 	bool bCanBeSnapped = !(Tile != nullptr && (*Tile) != this);
 
+#if WITH_EDITOR
+
 	if (!bCanBeSnapped)
 	{
 		USelection* Selection = GEditor->GetSelectedActors();
@@ -195,6 +197,9 @@ bool AHMTile::CanBeSnapped()
 			}
 		}
 	}
+
+#endif
+
 	return bCanBeSnapped;
 }
 
