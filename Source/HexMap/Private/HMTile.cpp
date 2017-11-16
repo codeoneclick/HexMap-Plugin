@@ -6,9 +6,14 @@
 #include "HMGrid.h"
 #include "HMTilePropertiesComponent.h"
 #include "HMTile.h"
+
+#if WITH_EDITOR
+
 #include "Editor.h"
 #include "EditorModeManager.h"
 #include "FHexMapEdMode.h"
+
+#endif
 
 AHMTile::AHMTile()
 {
