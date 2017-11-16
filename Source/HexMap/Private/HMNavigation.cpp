@@ -5,6 +5,12 @@
 #include "HMTileNavigationComponent.h"
 #include "HMNavigation.h"
 
+FHMNavigationAbstractNode::~FHMNavigationAbstractNode()
+{
+	Parent.Reset();
+	RemoveChildren();
+}
+
 void FHMNavigationAbstractNode::SetParent(const TSharedPtr<FHMNavigationAbstractNode>& Parent_)
 {
 	Parent = Parent_;
@@ -201,6 +207,11 @@ void FHMNavigation::ConstructNavigation(bool bReConstruct)
 {
 	if (bReConstruct)
 	{
+		for (auto NavigationNodeIt : Nodes)
+		{
+			TSharedPtr<FHMNavigationConcreteNode> NavigationNode = NavigationNodeIt.Value;
+			NavigationNode->RemoveChildren();
+		}
 		Nodes.Empty();
 
 		for (AHMTile* Tile : Tiles)

@@ -27,7 +27,7 @@ protected:
 public:
 
 	FHMNavigationAbstractNode() = default;
-	virtual ~FHMNavigationAbstractNode() = default;
+	virtual ~FHMNavigationAbstractNode();
 
 	void SetParent(const TSharedPtr<FHMNavigationAbstractNode>& Parent_);
 	TSharedPtr<FHMNavigationAbstractNode> GetParent() const;
