@@ -28,6 +28,9 @@ void AHMGrid::Tick(float DeltaTime)
 
 void AHMGrid::OnTileAdded(class AHMTile* Tile)
 {
+	Tiles.RemoveAll([](AHMTile* Tile_) {
+		return Tile_ == nullptr;
+	});
 	auto TileIt = TilesToLocationsLinkages.Find(Tile->UUID.HexCoord.ToVec());
 	if (!TileIt)
 	{
