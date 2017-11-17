@@ -11,6 +11,7 @@
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "HMActorPlacementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UHMActorNavigationComponent::UHMActorNavigationComponent()
 {
@@ -27,6 +28,7 @@ void UHMActorNavigationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	LastGoalLocation = GetComponentLocation();
+	LookAtLocation = GetComponentLocation();
 
 	if (bDebug)
 	{
@@ -66,7 +68,10 @@ void UHMActorNavigationComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		if (PawnController)
 		{
 			UPathFollowingComponent* PathFollowingComponent = PawnController->FindComponentByClass<UPathFollowingComponent>();
-			PathFollowingComponent->OnPathFinished(EPathFollowingResult::Success, FPathFollowingResultFlags::None);
+			if (PathFollowingComponent)
+			{
+				PathFollowingComponent->OnPathFinished(EPathFollowingResult::Success, FPathFollowingResultFlags::None);
+			}
 		}
 		if (bDebug)
 		{
@@ -188,14 +193,24 @@ bool UHMActorNavigationComponent::IsGoalActorReached(AActor* Actor, float Accept
 
 void UHMActorNavigationComponent::Interrupt()
 {
+	if (PawnController)
+	{
+		FVector CurrentLocation = PawnController->GetPawn()->GetActorLocation();
+		FRotator GoalRotation = UKismetMathLibrary::FindLookAtRotation(CurrentLocation, LookAtLocation);
+		FRotator CurrentRotation = PawnController->GetPawn()->GetActorRotation();
+		CurrentRotation.Yaw = GoalRotation.Yaw;
+		PawnController->GetPawn()->SetActorRotation(CurrentRotation);
+	}
 	Solution.Empty();
 	LastGoalLocation = GetComponentLocation();
+	LookAtLocation = GetComponentLocation();
 }
 
 bool UHMActorNavigationComponent::MoveToLocation(AController* Controller, const FVector& GoalLocation)
 {
 	bool bResult = GetPath(GoalLocation);
 	PawnController = Controller;
+	LookAtLocation = GoalLocation;
 	return bResult;
 }
 
@@ -205,6 +220,7 @@ bool UHMActorNavigationComponent::MoveToActor(AController* Controller, AActor* A
 	if (Actor)
 	{
 		FVector GoalLocation = Actor->GetActorLocation();
+		LookAtLocation = GoalLocation;
 		UHMActorPlacementComponent* PlacementComponent = Actor->FindComponentByClass<UHMActorPlacementComponent>();
 		if (PlacementComponent)
 		{

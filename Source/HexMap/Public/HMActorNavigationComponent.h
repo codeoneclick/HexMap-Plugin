@@ -31,6 +31,7 @@ public:
 	FVector LastGoalLocation;
 	bool bIsHasSolution = false;
 	AController* PawnController = nullptr;
+	FVector LookAtLocation;
 
 	virtual void BeginPlay() override;
 	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
