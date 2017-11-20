@@ -65,6 +65,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	TArray<AHMTile*> Neighbours;
 
+	UPROPERTY(EditAnywhere)
+	TSet<FString> Groups;
+
+	bool IsInGroup(const FString& GroupName) const;
+
 #if WITH_EDITOR
 
 	void OnEditorMousePressed();

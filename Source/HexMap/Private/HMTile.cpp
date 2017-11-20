@@ -239,3 +239,8 @@ void AHMTile::Mark()
 		AttachedMaterials.Empty();
 	}
 }
+
+bool AHMTile::IsInGroup(const FString& GroupName) const
+{
+	return Groups.Contains(GroupName);
+}
