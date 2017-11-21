@@ -1,10 +1,9 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
+#include "HMUtilities.h"
+#include "Engine.h"
 #include "HMCoord.h"
 #include "HMGrid.h"
 #include "HMTile.h"
-#include "HMUtilities.h"
 
 FHMTileUUID FHMTileUUID::Init(const FHMCoord& HexCoord_)
 {

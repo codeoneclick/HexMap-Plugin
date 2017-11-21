@@ -1,7 +1,6 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
 #include "HMTileNavigationComponent.h"
+#include "Engine.h"
 
 UHMTileNavigationComponent::UHMTileNavigationComponent()
 {

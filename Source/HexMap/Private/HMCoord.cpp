@@ -1,7 +1,8 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
 #include "HMCoord.h"
+#include "Engine.h"
+#include <vector>
+#include <limits>
 
 const std::vector<FHMCoord> FHMCoord::HexDirections = { FHMCoord::Init(1, 0, -1), FHMCoord::Init(1, -1, 0), FHMCoord::Init(0, -1, 1), FHMCoord::Init(-1, 0, 1), FHMCoord::Init(-1, 1, 0), FHMCoord::Init(0, 1, -1) };
 

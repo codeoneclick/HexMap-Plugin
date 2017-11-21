@@ -1,9 +1,9 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
+#include "HMNavigation.h"
+#include "Engine.h"
 #include "HMTile.h"
 #include "HMTileNavigationComponent.h"
-#include "HMNavigation.h"
+#include <algorithm>
 
 FHMNavigationAbstractNode::~FHMNavigationAbstractNode()
 {

@@ -1,11 +1,10 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
+#include "HMTile.h"
+#include "Engine.h"
 #include "HMCoord.h"
 #include "HMUtilities.h"
 #include "HMGrid.h"
 #include "HMTilePropertiesComponent.h"
-#include "HMTile.h"
 
 #if WITH_EDITOR
 

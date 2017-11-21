@@ -1,12 +1,11 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
+#include "HMGridPropertiesComponent.h"
+#include "Engine.h"
 #include "HMUtilities.h"
 #include "HMCoord.h"
 #include "HMGrid.h"
 #include "HMTile.h"
 #include "HMTilePropertiesComponent.h"
-#include "HMGridPropertiesComponent.h"
 
 UHMGridPropertiesComponent::UHMGridPropertiesComponent()
 {

@@ -5,6 +5,8 @@ public class HexMap : ModuleRules
 {
     public HexMap(ReadOnlyTargetRules Target) : base(Target)
     {
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
         PublicDependencyModuleNames.AddRange(new string[] 
         {
             "Core",

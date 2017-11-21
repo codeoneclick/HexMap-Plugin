@@ -4,7 +4,7 @@
 	"VersionName": "1.0",
 	"FriendlyName": "HexMap",
 	"Description": "Hex Map Plugin",
-	"Category": "Terrain",
+	"Category": "Editor",
 	"CreatedBy": "Serhii Serhiiv",
 	"CreatedByURL": "s.serhiiv@gmail.com",
 	"DocsURL": "",
@@ -19,8 +19,7 @@
 			"Name": "HexMap",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"WhitelistPlatforms":
-			[ 
+			"WhitelistPlatforms": [
 				"Win32",
 				"Win64"
 			]

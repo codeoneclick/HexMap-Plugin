@@ -1,9 +1,10 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
 #include "HMActorPlacementComponent.h"
+#include "Engine.h"
 #include "HMMeshComponent.h"
 #include "HMGrid.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include <algorithm>
 
 UHMActorPlacementComponent::UHMActorPlacementComponent()
 {

@@ -1,7 +1,6 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
 #include "HMTilePropertiesComponent.h"
+#include "Engine.h"
 
 UHMTilePropertiesComponent::UHMTilePropertiesComponent()
 {

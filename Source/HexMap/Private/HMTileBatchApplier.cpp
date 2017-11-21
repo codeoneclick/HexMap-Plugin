@@ -1,6 +1,6 @@
 
-#include "HexMapPrivatePCH.h"
 #include "HMTileBatchApplier.h"
+#include "Engine.h"
 
 AHMTileBatchApplier::AHMTileBatchApplier()
 {

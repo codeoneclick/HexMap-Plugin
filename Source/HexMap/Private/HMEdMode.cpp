@@ -1,11 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "HexMapPrivatePCH.h"
+#include "HMEdMode.h"
 
 #if WITH_EDITOR
 
-#include "HexMap.h"
-#include "HMEdMode.h"
+#include "Engine.h"
 #include "HMEdModeToolkit.h"
 #include "Editor/UnrealEd/Public/EditorViewportClient.h"
 #include "Editor/UnrealEd/Public/EditorModeManager.h"

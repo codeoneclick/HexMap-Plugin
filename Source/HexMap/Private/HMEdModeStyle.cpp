@@ -1,13 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "HexMapPrivatePCH.h"
+#include "HMEdModeStyle.h"
 
 #if WITH_EDITOR
 
-#include "HexMap.h"
-#include "HMEdModeStyle.h"
 #include "SlateStyle.h"
 #include "IPluginManager.h"
+#include "Styling/SlateStyleRegistry.h"
 
 #define ICON_TAB_MODE( RelativePath, ... ) FSlateImageBrush( FHMEdModeStyle::InContent( RelativePath, ".png" ), __VA_ARGS__ )
 
@@ -23,10 +22,9 @@ TSharedPtr< class ISlateStyle > FHMEdModeStyle::Get() { return StyleSet; }
 void FHMEdModeStyle::Initialize()
 {
 	UE_LOG(LogTemp, Log, TEXT("Initializing HexMapEdMode Style"));
-	// Const icon sizes
+
 	const FVector2D Icon40x40(40.0f, 40.0f);
 
-	// Only register once
 	if (StyleSet.IsValid())
 	{
 		return;
@@ -34,7 +32,6 @@ void FHMEdModeStyle::Initialize()
 
 	StyleSet = MakeShareable<FSlateStyleSet>(new FSlateStyleSet("HexMapEdStyle"));
 
-	// Style
 	{
 		StyleSet->Set("LevelEditor.HexMapMode", new ICON_TAB_MODE("icon_Hex_Map_Mode_Selected_40px", Icon40x40));
 		StyleSet->Set("LevelEditor.HexMapMode.Small", new ICON_TAB_MODE("icon_Hex_Map_Mode_Selected_40px", Icon40x40));

@@ -1,6 +1,6 @@
 
-#include "HexMapPrivatePCH.h"
 #include "HMActorNavigationComponent.h"
+#include "Engine.h"
 #include "HMGrid.h"
 #include "HMTile.h"
 #include "HMUtilities.h"

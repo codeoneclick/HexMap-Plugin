@@ -1,15 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "HexMapPrivatePCH.h"
+#include "HMEdModeToolkit.h"
 
 #if WITH_EDITOR
 
-#include "HexMap.h"
 #include "HMEdMode.h"
-#include "HMEdModeToolkit.h"
+#include "Engine.h"
 #include "Editor/UnrealEd/Public/EditorModeManager.h"
 #include "Editor/PropertyEditor/Public/PropertyHandle.h"
 #include "Editor/PropertyEditor/Public/PropertyCustomizationHelpers.h"
+#include "Widgets/Layout/SScrollBox.h"
+#include "Widgets/Text/STextBlock.h"
 #include "SExpandableArea.h"
 #include "DetailLayoutBuilder.h"
 #include "DetailCategoryBuilder.h"
@@ -20,6 +20,7 @@
 #include "HMUtilities.h"
 #include "HMTileRandomizer.h"
 #include "HMTileBatchApplier.h"
+#include <algorithm>
 
 #define LOCTEXT_NAMESPACE "HMEdModeToolkit"
 

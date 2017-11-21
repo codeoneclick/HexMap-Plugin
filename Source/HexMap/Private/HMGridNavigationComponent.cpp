@@ -1,12 +1,12 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
+#include "HMGridNavigationComponent.h"
+#include "Engine.h"
 #include "HMGrid.h"
 #include "HMTile.h"
 #include "HMUtilities.h"
 #include "HMNavigation.h"
 #include "HMTileNavigationComponent.h"
-#include "HMGridNavigationComponent.h"
+#include <algorithm>
 
 UHMGridNavigationComponent::UHMGridNavigationComponent()
 {

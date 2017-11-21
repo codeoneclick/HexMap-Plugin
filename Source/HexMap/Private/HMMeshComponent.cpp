@@ -1,9 +1,8 @@
 
-#include "HexMapPrivatePCH.h"
-#include "HexMap.h"
+#include "HMMeshComponent.h"
+#include "Engine.h"
 #include "DynamicMeshBuilder.h"
 #include "PhysicsEngine/BodySetup.h"
-#include "HMMeshComponent.h"
 
 const int32 UHMMeshComponent::NumSubdivisions = 6;
 
