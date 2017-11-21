@@ -11,6 +11,7 @@
 #include "Editor/UnrealEd/Public/EditorModeManager.h"
 #include "Toolkits/ToolkitManager.h"
 #include "HMTile.h"
+#include "HMGrid.h"
 #include "HexMapEdModeProperties.h"
 
 FEditorModeID FHexMapEdMode::EM_HexMap(TEXT("EM_HexMap"));
@@ -56,6 +57,11 @@ void FHexMapEdMode::Tick(FEditorViewportClient* ViewportClient, float DeltaTime)
 	{
 		AHMTile* Tile = *It;
 		Tile->OnEditorTick(DeltaTime);
+	}
+	for (TActorIterator<AHMGrid> It(ViewportClient->GetWorld()); It; ++It)
+	{
+		AHMGrid* Grid = *It;
+		Grid->OnEditorTick(DeltaTime);
 	}
 }
 

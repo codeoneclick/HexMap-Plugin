@@ -6,7 +6,31 @@
 #include "GameFramework/Actor.h"
 #include "HMCoord.h"
 #include "HMUtilities.h"
+#include "Containers/Queue.h"
 #include "HMGrid.generated.h"
+
+UENUM(BlueprintType)
+enum class EHMTileOperation : uint8
+{
+	OP_UNKNOWN UMETA(DisplayName = "Unknown"),
+	OP_ADD UMETA(DisplayName = "Add"),
+	OP_UPDATE UMETA(DisplayName = "Update"),
+	OP_REMOVE UMETA(DisplayName = "Remove"),
+};
+
+USTRUCT(Blueprintable, BlueprintType)
+struct HEXMAP_API FHMTileOperation
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	class AHMTile* Tile = nullptr;
+	EHMTileOperation Operation = EHMTileOperation::OP_UNKNOWN;
+	FHMTileUUID CurrentUUID = FHMTileUUID::Undefined();
+	FHMTileUUID OldUUID = FHMTileUUID::Undefined();
+	bool bError = false;
+};
 
 UCLASS()
 class HEXMAP_API AHMGrid : public AActor
@@ -25,6 +49,8 @@ private:
 
 	void UpdateTilesLogic();
 	void UpdateTilesVisual();
+
+	TQueue<FHMTileOperation> OperationQueue;
 
 protected:
 
@@ -57,4 +83,10 @@ public:
 	TMap<FIntVector, class AHMTile*> TilesToLocationsLinkages;
 
 	void OnTileSizeChanged(float TileSize_);
+
+#if WITH_EDITOR
+
+	void OnEditorTick(float DeltaTime);
+
+#endif
 };

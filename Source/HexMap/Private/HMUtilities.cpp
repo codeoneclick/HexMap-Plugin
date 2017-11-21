@@ -42,7 +42,7 @@ AHMGrid* FHMUtilities::GetGrid(UWorld* World, bool& OutError)
 	}
 	if (InstancesCount > 1)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Wrong Instances Count for HexMapGrid!"));
+		UE_LOG(LogTemp, Error, TEXT("wrong instances count for grid!"));
 		OutError = true;
 		return nullptr;
 	}

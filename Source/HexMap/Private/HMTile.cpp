@@ -63,7 +63,7 @@ void AHMTile::OnEditorTick(float DeltaTime)
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "Can't attach Tile to unknown Grid!");
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "ñan't attach Tile to unknown grid!");
 		}
 
 		if (!IsAttachedTo(Grid))
@@ -88,7 +88,7 @@ void AHMTile::OnConstruction(const FTransform& Transform)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Can't find Grid!"));
+			UE_LOG(LogTemp, Warning, TEXT("can't find grid!"));
 		}
 		bConstructed = true;
 		bShouldBeAttached = true;

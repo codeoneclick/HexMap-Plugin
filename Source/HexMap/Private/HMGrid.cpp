@@ -28,45 +28,28 @@ void AHMGrid::Tick(float DeltaTime)
 
 void AHMGrid::OnTileAdded(class AHMTile* Tile)
 {
-	Tiles.RemoveAll([](AHMTile* Tile_) {
-		return Tile_ == nullptr;
-	});
-	auto TileIt = TilesToLocationsLinkages.Find(Tile->UUID.HexCoord.ToVec());
-	if (!TileIt)
-	{
-		if (!Tile->UUID.IsUndefined())
-		{
-			TilesToLocationsLinkages.Add(Tile->UUID.HexCoord.ToVec(), Tile);
-		}
-	}
-	if (Tiles.Find(Tile) == INDEX_NONE)
-	{
-		Tiles.Add(Tile);
-	}
-	UpdateTiles();
+	FHMTileOperation TileOperation;
+	TileOperation.Operation = EHMTileOperation::OP_ADD;
+	TileOperation.Tile = Tile;
+	OperationQueue.Enqueue(TileOperation);
 }
 
 void AHMGrid::OnTileRemoved(class AHMTile* Tile)
 {
-	if (!Tile->UUID.IsUndefined())
-	{
-		TilesToLocationsLinkages.Remove(Tile->UUID.HexCoord.ToVec());
-	}
-	Tiles.Remove(Tile);
-	UpdateTiles();
+	FHMTileOperation TileOperation;
+	TileOperation.Operation = EHMTileOperation::OP_REMOVE;
+	TileOperation.Tile = Tile;
+	OperationQueue.Enqueue(TileOperation);
 }
 
 void AHMGrid::OnTileLocationUpdated(class AHMTile* Tile, const FHMTileUUID& OldUUID, bool bError)
 {
-	TilesToLocationsLinkages.Remove(OldUUID.HexCoord.ToVec());
-	if (!bError)
-	{
-		if (!Tile->UUID.IsUndefined())
-		{
-			TilesToLocationsLinkages.Add(Tile->UUID.HexCoord.ToVec(), Tile);
-		}
-	}
-	UpdateTiles();
+	FHMTileOperation TileOperation;
+	TileOperation.Operation = EHMTileOperation::OP_UPDATE;
+	TileOperation.Tile = Tile;
+	TileOperation.OldUUID = OldUUID;
+	TileOperation.bError = bError;
+	OperationQueue.Enqueue(TileOperation);
 }
 
 void AHMGrid::UpdateTiles()
@@ -128,4 +111,71 @@ void AHMGrid::OnTileSizeChanged(float TileSize_)
 	}
 	UpdateTiles();
 }
+
+#if WITH_EDITOR
+
+void AHMGrid::OnEditorTick(float DeltaTime)
+{
+	if (!OperationQueue.IsEmpty())
+	{
+		Tiles.RemoveAll([](AHMTile* Tile_) {
+			return Tile_ == nullptr;
+		});
+
+		FHMTileOperation TileOperation;
+		while (!OperationQueue.IsEmpty())
+		{
+			OperationQueue.Peek(TileOperation);
+			switch (TileOperation.Operation)
+			{
+				case EHMTileOperation::OP_ADD:
+				{
+					auto TileIt = TilesToLocationsLinkages.Find(TileOperation.Tile->UUID.HexCoord.ToVec());
+					if (!TileIt)
+					{
+						if (!TileOperation.Tile->UUID.IsUndefined())
+						{
+							TilesToLocationsLinkages.Add(TileOperation.Tile->UUID.HexCoord.ToVec(), TileOperation.Tile);
+						}
+					}
+					if (Tiles.Find(TileOperation.Tile) == INDEX_NONE)
+					{
+						Tiles.Add(TileOperation.Tile);
+					}
+				}
+				break;
+				case EHMTileOperation::OP_UPDATE:
+				{
+					TilesToLocationsLinkages.Remove(TileOperation.OldUUID.HexCoord.ToVec());
+					if (!TileOperation.bError)
+					{
+						if (!TileOperation.Tile->UUID.IsUndefined())
+						{
+							TilesToLocationsLinkages.Add(TileOperation.Tile->UUID.HexCoord.ToVec(), TileOperation.Tile);
+						}
+					}
+				}
+				break;
+				case EHMTileOperation::OP_REMOVE:
+				{
+					if (!TileOperation.Tile->UUID.IsUndefined())
+					{
+						TilesToLocationsLinkages.Remove(TileOperation.Tile->UUID.HexCoord.ToVec());
+					}
+					Tiles.Remove(TileOperation.Tile);
+				}
+				break;
+				default:
+				{
+					ensure(false);
+				}
+				break;
+			}
+			OperationQueue.Pop();
+		}
+		UpdateTiles();
+	}
+}
+
+#endif
 
