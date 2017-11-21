@@ -5,15 +5,15 @@
 #if WITH_EDITOR
 
 #include "HexMap.h"
-#include "FHexMapEdToolkit.h"
-#include "FHexMapEdMode.h"
+#include "HMEdMode.h"
+#include "HMEdModeToolkit.h"
 #include "Editor/UnrealEd/Public/EditorModeManager.h"
 #include "Editor/PropertyEditor/Public/PropertyHandle.h"
 #include "Editor/PropertyEditor/Public/PropertyCustomizationHelpers.h"
 #include "SExpandableArea.h"
 #include "DetailLayoutBuilder.h"
 #include "DetailCategoryBuilder.h"
-#include "HexMapEdModeProperties.h"
+#include "HMEdModeProperties.h"
 #include "EditorViewportClient.h"
 #include "HMGrid.h"
 #include "HMTile.h"
@@ -21,17 +21,9 @@
 #include "HMTileRandomizer.h"
 #include "HMTileBatchApplier.h"
 
-#define LOCTEXT_NAMESPACE "FHexMapEdToolkit"
+#define LOCTEXT_NAMESPACE "HMEdModeToolkit"
 
-FHexMapEdToolkit::FHexMapEdToolkit()
-{
-}
-
-FHexMapEdToolkit::~FHexMapEdToolkit()
-{
-}
-
-void FHexMapEdToolkit::Init(const TSharedPtr<class IToolkitHost>& ToolkitHost)
+void FHMEdModeToolkit::Init(const TSharedPtr<class IToolkitHost>& ToolkitHost)
 {
 	struct Locals
 	{
@@ -86,22 +78,22 @@ void FHexMapEdToolkit::Init(const TSharedPtr<class IToolkitHost>& ToolkitHost)
 	FModeToolkit::Init(ToolkitHost);
 }
 
-FName FHexMapEdToolkit::GetToolkitFName() const
+FName FHMEdModeToolkit::GetToolkitFName() const
 {
-	return FName("HexMapEdToolkit");
+	return FName("HMEdModeToolkit");
 }
 
-FText FHexMapEdToolkit::GetBaseToolkitName() const
+FText FHMEdModeToolkit::GetBaseToolkitName() const
 {
-	return NSLOCTEXT("HexMapEdToolkit", "DisplayName", "HexMapEd Tool");
+	return NSLOCTEXT("HMEdModeToolkit", "DisplayName", "HexMapEd Tool");
 }
 
-class FEdMode* FHexMapEdToolkit::GetEditorMode() const
+class FEdMode* FHMEdModeToolkit::GetEditorMode() const
 {
-	return GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap);
+	return GLevelEditorModeTools().GetActiveMode(FHMEdMode::EM_HexMap);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_Copyright_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_Copyright_SLOT(FHMEdModeToolkit* SELF)
 {
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
@@ -114,12 +106,12 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_Copyright_SLOT(FHexMapEdToolkit* SELF
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SetTileSize_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_SetTileSize_SLOT(FHMEdModeToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
 	SELF->EdModePanelSetTileSize = PropertyEditorModule.CreateDetailView(Args);
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
 		SELF->EdModePanelSetTileSize->SetObject(HexMapEdMode->EdModePropertiesSetTileSize, true);
@@ -166,12 +158,12 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SetTileSize_SLOT(FHexMapEdToolkit* SE
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddCircle_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_AddCircle_SLOT(FHMEdModeToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
 	SELF->EdModePanelAddCircle = PropertyEditorModule.CreateDetailView(Args);
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
 		SELF->EdModePanelAddCircle->SetObject(HexMapEdMode->EdModePropertiesAddCircle, true);
@@ -218,12 +210,12 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddCircle_SLOT(FHexMapEdToolkit* SELF
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddRectangle_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_AddRectangle_SLOT(FHMEdModeToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
 	SELF->EdModePanelAddRectangle = PropertyEditorModule.CreateDetailView(Args);
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
 		SELF->EdModePanelAddRectangle->SetObject(HexMapEdMode->EdModePropertiesAddRectangle, true);
@@ -270,12 +262,12 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddRectangle_SLOT(FHexMapEdToolkit* S
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddTile_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_AddTile_SLOT(FHMEdModeToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
 	SELF->EdModePanelAddTile = PropertyEditorModule.CreateDetailView(Args);
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
 		SELF->EdModePanelAddTile->SetObject(HexMapEdMode->EdModePropertiesAddTile, true);
@@ -322,12 +314,12 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddTile_SLOT(FHexMapEdToolkit* SELF)
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_RandomizeTiles_SLOT(FHMEdModeToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
 	SELF->EdModePanelRandomizeTiles = PropertyEditorModule.CreateDetailView(Args);
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
 		SELF->EdModePanelRandomizeTiles->SetObject(HexMapEdMode->EdModePropertiesRandomizeTiles, true);
@@ -374,12 +366,12 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit*
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_TilesBatchApplier_SLOT(FHexMapEdToolkit* SELF)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_TilesBatchApplier_SLOT(FHMEdModeToolkit* SELF)
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs Args(false, false, false, FDetailsViewArgs::HideNameArea);
 	SELF->EdModePanelTilesBatchApplier = PropertyEditorModule.CreateDetailView(Args);
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)SELF->GetEditorMode();
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)SELF->GetEditorMode();
 	if (HexMapEdMode)
 	{
 		SELF->EdModePanelTilesBatchApplier->SetObject(HexMapEdMode->EdModePropertiesTileBatchApplier, true);
@@ -426,69 +418,69 @@ TSharedRef<SWidget> FHexMapEdToolkit::MAKE_TilesBatchApplier_SLOT(FHexMapEdToolk
 		];
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_SetTileSize_BTN(const FText& Label)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_SetTileSize_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
 		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_SetTileSize_BTN);
+		.OnClicked_Static(FHMEdModeToolkit::ON_SetTileSize_BTN);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddCircle_BTN(const FText& Label)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_AddCircle_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
 		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_AddCircle_BTN);
+		.OnClicked_Static(FHMEdModeToolkit::ON_AddCircle_BTN);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddRectangle_BTN(const FText& Label)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_AddRectangle_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
 		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_AddRectangle_BTN);
+		.OnClicked_Static(FHMEdModeToolkit::ON_AddRectangle_BTN);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_AddTile_BTN(const FText& Label)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_AddTile_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
 		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_AddTile_BTN);
+		.OnClicked_Static(FHMEdModeToolkit::ON_AddTile_BTN);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_RandomizeTiles_BTN(const FText& Label)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_RandomizeTiles_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
 		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_RandomizeTiles_BTN);
+		.OnClicked_Static(FHMEdModeToolkit::ON_RandomizeTiles_BTN);
 }
 
-TSharedRef<SWidget> FHexMapEdToolkit::MAKE_TilesBatchApplier_BTN(const FText& Label)
+TSharedRef<SWidget> FHMEdModeToolkit::MAKE_TilesBatchApplier_BTN(const FText& Label)
 {
 	return SNew(SButton)
 		.Text(Label)
 		.ButtonColorAndOpacity(FLinearColor(.12f, .12f, .12f, 1.f))
 		.ForegroundColor(FLinearColor::White)
 		.HAlign(HAlign_Center)
-		.OnClicked_Static(FHexMapEdToolkit::ON_TilesBatchApplier_BTN);
+		.OnClicked_Static(FHMEdModeToolkit::ON_TilesBatchApplier_BTN);
 }
 
-FReply FHexMapEdToolkit::ON_AddCircle_BTN()
+FReply FHMEdModeToolkit::ON_AddCircle_BTN()
 {
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)(GLevelEditorModeTools().GetActiveMode(FHMEdMode::EM_HexMap));
 	if (HexMapEdMode->EdModePropertiesAddCircle->Tile_BP)
 	{
 		FVector Location = HexMapEdMode->EdModePropertiesAddCircle->Location;
@@ -533,9 +525,9 @@ FReply FHexMapEdToolkit::ON_AddCircle_BTN()
 	return FReply::Handled();
 }
 
-FReply FHexMapEdToolkit::ON_AddRectangle_BTN()
+FReply FHMEdModeToolkit::ON_AddRectangle_BTN()
 {
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)(GLevelEditorModeTools().GetActiveMode(FHMEdMode::EM_HexMap));
 	if (HexMapEdMode->EdModePropertiesAddRectangle->Tile_BP)
 	{
 		FVector Location = HexMapEdMode->EdModePropertiesAddRectangle->Location;
@@ -578,9 +570,9 @@ FReply FHexMapEdToolkit::ON_AddRectangle_BTN()
 	return FReply::Handled();
 }
 
-FReply FHexMapEdToolkit::ON_AddTile_BTN()
+FReply FHMEdModeToolkit::ON_AddTile_BTN()
 {
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)(GLevelEditorModeTools().GetActiveMode(FHMEdMode::EM_HexMap));
 	if (HexMapEdMode->EdModePropertiesAddTile->Tile_BP)
 	{
 		FEditorViewportClient* ViewportClient = (FEditorViewportClient*)GEditor->GetActiveViewport()->GetClient();
@@ -607,13 +599,13 @@ FReply FHexMapEdToolkit::ON_AddTile_BTN()
 	return FReply::Handled();
 }
 
-FReply FHexMapEdToolkit::ON_RandomizeTiles_BTN()
+FReply FHMEdModeToolkit::ON_RandomizeTiles_BTN()
 {
 	TArray<AHMTile*> SelectedTiles;
 	GetSelectedTiles(SelectedTiles);
 	if (SelectedTiles.Num() > 0)
 	{
-		FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+		FHMEdMode* HexMapEdMode = (FHMEdMode*)(GLevelEditorModeTools().GetActiveMode(FHMEdMode::EM_HexMap));
 		if (HexMapEdMode && HexMapEdMode->EdModePropertiesRandomizeTiles->Randomizer_BP)
 		{
 			UWorld* World = GEditor->GetEditorWorldContext().World();
@@ -638,13 +630,13 @@ FReply FHexMapEdToolkit::ON_RandomizeTiles_BTN()
 	return FReply::Handled();
 }
 
-FReply FHexMapEdToolkit::ON_TilesBatchApplier_BTN()
+FReply FHMEdModeToolkit::ON_TilesBatchApplier_BTN()
 {
 	TArray<AHMTile*> SelectedTiles;
 	GetSelectedTiles(SelectedTiles);
 	if (SelectedTiles.Num() > 0)
 	{
-		FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+		FHMEdMode* HexMapEdMode = (FHMEdMode*)(GLevelEditorModeTools().GetActiveMode(FHMEdMode::EM_HexMap));
 		if (HexMapEdMode && HexMapEdMode->EdModePropertiesTileBatchApplier->Applier_BP)
 		{
 			UWorld* World = GEditor->GetEditorWorldContext().World();
@@ -669,18 +661,18 @@ FReply FHexMapEdToolkit::ON_TilesBatchApplier_BTN()
 	return FReply::Handled();
 }
 
-FReply FHexMapEdToolkit::ON_SetTileSize_BTN()
+FReply FHMEdModeToolkit::ON_SetTileSize_BTN()
 {
 	UWorld* World = GEditor->GetEditorWorldContext().World();
 	GEditor->BeginTransaction(LOCTEXT("SetHMTileSize", "SetHMTileSize"));
-	FHexMapEdMode* HexMapEdMode = (FHexMapEdMode*)(GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap));
+	FHMEdMode* HexMapEdMode = (FHMEdMode*)(GLevelEditorModeTools().GetActiveMode(FHMEdMode::EM_HexMap));
 	AHMGrid* Grid = FHMUtilities::GetGrid(World);
 	Grid->OnTileSizeChanged(HexMapEdMode->EdModePropertiesSetTileSize->TileSize);
 	GEditor->EndTransaction();
 	return FReply::Handled();
 }
 
-void FHexMapEdToolkit::GetSelectedTiles(TArray<class AHMTile*>& Tiles)
+void FHMEdModeToolkit::GetSelectedTiles(TArray<class AHMTile*>& Tiles)
 {
 	USelection* Selection = GEditor->GetSelectedActors();
 	for (int32 i = 0; i < Selection->Num(); ++i)

@@ -10,7 +10,7 @@ UHMActorPlacementComponent::UHMActorPlacementComponent()
 	static ConstructorHelpers::FObjectFinder<UMaterial> Material_ASSET(TEXT("Material'/HexMap/M_HMNavigationDebug.M_HMNavigationDebug'"));
 	Material = Material_ASSET.Object;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMesh_ASSET(TEXT("StaticMesh'/HexMap/SM_HexTile.SM_HexTile'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMesh_ASSET(TEXT("StaticMesh'/HexMap/SM_HMTile.SM_HMTile'"));
 	Mesh = StaticMesh_ASSET.Object;
 
 	RootComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HMRootComponent"));

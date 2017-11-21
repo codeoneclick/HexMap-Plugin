@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "HexMapEdModeProperties.generated.h"
+#include "HMEdModeProperties.generated.h"
 
 UCLASS()
 class HEXMAP_API UHMEdModePropertiesAddCircle : public UObject

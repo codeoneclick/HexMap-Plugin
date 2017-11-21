@@ -8,7 +8,7 @@
 #include "ISettingsModule.h"
 #include "ModuleManager.h"
 
-class FHexMapEdStyle
+class FHMEdModeStyle
 {
 protected:
 
@@ -17,8 +17,8 @@ protected:
 
 public:
 
-	FHexMapEdStyle();
-	~FHexMapEdStyle();
+	FHMEdModeStyle() = default;
+	~FHMEdModeStyle() = default;
 
 	static void Initialize();
 	static void Shutdown();

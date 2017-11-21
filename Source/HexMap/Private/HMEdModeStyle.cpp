@@ -5,31 +5,23 @@
 #if WITH_EDITOR
 
 #include "HexMap.h"
-#include "FHexMapEdStyle.h"
+#include "HMEdModeStyle.h"
 #include "SlateStyle.h"
 
-#define ICON_TAB_MODE( RelativePath, ... ) FSlateImageBrush( FHexMapEdStyle::InContent( RelativePath, ".png" ), __VA_ARGS__ )
+#define ICON_TAB_MODE( RelativePath, ... ) FSlateImageBrush( FHMEdModeStyle::InContent( RelativePath, ".png" ), __VA_ARGS__ )
 
-FHexMapEdStyle::FHexMapEdStyle()
-{
-}
-
-FHexMapEdStyle::~FHexMapEdStyle()
-{
-}
-
-FString FHexMapEdStyle::InContent(const FString& RelativePath, const ANSICHAR* Extension)
+FString FHMEdModeStyle::InContent(const FString& RelativePath, const ANSICHAR* Extension)
 {
 	static FString ContentDir = FPaths::ProjectPluginsDir() / TEXT("HexMapExtension/Content");
 	return (ContentDir / RelativePath) + Extension;
 }
 
-TSharedPtr< FSlateStyleSet > FHexMapEdStyle::StyleSet = NULL;
-TSharedPtr< class ISlateStyle > FHexMapEdStyle::Get() { return StyleSet; }
+TSharedPtr< FSlateStyleSet > FHMEdModeStyle::StyleSet = NULL;
+TSharedPtr< class ISlateStyle > FHMEdModeStyle::Get() { return StyleSet; }
 
-void FHexMapEdStyle::Initialize()
+void FHMEdModeStyle::Initialize()
 {
-	UE_LOG(LogTemp, Log, TEXT("Initializing HexMapEd Style"));
+	UE_LOG(LogTemp, Log, TEXT("Initializing HexMapEdMode Style"));
 	// Const icon sizes
 	const FVector2D Icon40x40(40.0f, 40.0f);
 
@@ -53,7 +45,7 @@ void FHexMapEdStyle::Initialize()
 
 #undef ICON_TAB_MODE
 
-void FHexMapEdStyle::Shutdown()
+void FHMEdModeStyle::Shutdown()
 {
 	if (StyleSet.IsValid())
 	{

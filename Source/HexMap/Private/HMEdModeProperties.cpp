@@ -1,5 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HexMapPrivatePCH.h"
-#include "HexMap.h"
-#include "HexMapEdModeProperties.h"
+#include "HMEdModeProperties.h"

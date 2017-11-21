@@ -8,7 +8,7 @@
 #include "Editor/UnrealEd/Public/Toolkits/BaseToolkit.h"
 #include "IDetailsView.h"
 
-class FHexMapEdToolkit : public FModeToolkit
+class FHMEdModeToolkit : public FModeToolkit
 {
 private:
 
@@ -19,13 +19,13 @@ private:
 	static TSharedRef<SWidget> MAKE_RandomizeTiles_BTN(const FText& Label);
 	static TSharedRef<SWidget> MAKE_TilesBatchApplier_BTN(const FText& Label);
 
-	static TSharedRef<SWidget> MAKE_SetTileSize_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_AddCircle_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_AddRectangle_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_AddTile_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_RandomizeTiles_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_TilesBatchApplier_SLOT(FHexMapEdToolkit* SELF);
-	static TSharedRef<SWidget> MAKE_Copyright_SLOT(FHexMapEdToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_SetTileSize_SLOT(FHMEdModeToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_AddCircle_SLOT(FHMEdModeToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_AddRectangle_SLOT(FHMEdModeToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_AddTile_SLOT(FHMEdModeToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_RandomizeTiles_SLOT(FHMEdModeToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_TilesBatchApplier_SLOT(FHMEdModeToolkit* SELF);
+	static TSharedRef<SWidget> MAKE_Copyright_SLOT(FHMEdModeToolkit* SELF);
 
 	static FReply ON_SetTileSize_BTN();
 	static FReply ON_AddCircle_BTN();
@@ -48,8 +48,8 @@ protected:
 
 public:
 
-	FHexMapEdToolkit();
-	~FHexMapEdToolkit();
+	FHMEdModeToolkit() = default;
+	~FHMEdModeToolkit() = default;
 
 	virtual void Init(const TSharedPtr<class IToolkitHost>& ToolkitHost) override;
 

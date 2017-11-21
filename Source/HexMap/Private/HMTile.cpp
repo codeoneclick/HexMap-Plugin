@@ -11,14 +11,14 @@
 
 #include "Editor.h"
 #include "EditorModeManager.h"
-#include "FHexMapEdMode.h"
+#include "HMEdMode.h"
 
 #endif
 
 AHMTile::AHMTile()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("Material'/HexMap/M_LocationError.M_LocationError'"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("Material'/HexMap/M_HMLocationError.M_HMLocationError'"));
 	DetachedMaterial = Material.Object;
 }
 
@@ -133,7 +133,7 @@ void AHMTile::PostEditChangeProperty(struct FPropertyChangedEvent& Event)
 
 void AHMTile::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
 {
-	if (GLevelEditorModeTools().GetActiveMode(FHexMapEdMode::EM_HexMap))
+	if (GLevelEditorModeTools().GetActiveMode(FHMEdMode::EM_HexMap))
 	{
 		OnSnapError(CanBeSnapped());
 		Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);

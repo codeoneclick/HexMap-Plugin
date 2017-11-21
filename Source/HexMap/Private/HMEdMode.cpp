@@ -5,18 +5,18 @@
 #if WITH_EDITOR
 
 #include "HexMap.h"
-#include "FHexMapEdMode.h"
-#include "FHexMapEdToolkit.h"
+#include "HMEdMode.h"
+#include "HMEdModeToolkit.h"
 #include "Editor/UnrealEd/Public/EditorViewportClient.h"
 #include "Editor/UnrealEd/Public/EditorModeManager.h"
 #include "Toolkits/ToolkitManager.h"
 #include "HMTile.h"
 #include "HMGrid.h"
-#include "HexMapEdModeProperties.h"
+#include "HMEdModeProperties.h"
 
-FEditorModeID FHexMapEdMode::EM_HexMap(TEXT("EM_HexMap"));
+FEditorModeID FHMEdMode::EM_HexMap(TEXT("EM_HexMap"));
 
-FHexMapEdMode::FHexMapEdMode()
+FHMEdMode::FHMEdMode()
 {
 	EdModePropertiesSetTileSize = NewObject<UHMEdModePropertiesSetTileSize>(GetTransientPackage(), TEXT("EdModePropertiesSetTileSize"), RF_Transactional | RF_MarkAsRootSet);
 	EdModePropertiesAddCircle = NewObject<UHMEdModePropertiesAddCircle>(GetTransientPackage(), TEXT("EdModePropertiesAddCircle"), RF_Transactional | RF_MarkAsRootSet);
@@ -26,21 +26,17 @@ FHexMapEdMode::FHexMapEdMode()
 	EdModePropertiesTileBatchApplier = NewObject<UHMEdModePropertiesTileBatchApplier>(GetTransientPackage(), TEXT("EdModePropertiesTileBatchApplier"), RF_Transactional | RF_MarkAsRootSet);
 }
 
-FHexMapEdMode::~FHexMapEdMode()
-{
-}
-
-void FHexMapEdMode::Enter()
+void FHMEdMode::Enter()
 {
 	FEdMode::Enter();
 	if (!Toolkit.IsValid() && UsesToolkits())
 	{
-		Toolkit = MakeShareable(new FHexMapEdToolkit);
+		Toolkit = MakeShareable(new FHMEdModeToolkit);
 		Toolkit->Init(Owner->GetToolkitHost());
 	}
 }
 
-void FHexMapEdMode::Exit()
+void FHMEdMode::Exit()
 {
 	if (Toolkit.IsValid())
 	{
@@ -50,7 +46,7 @@ void FHexMapEdMode::Exit()
 	FEdMode::Exit();
 }
 
-void FHexMapEdMode::Tick(FEditorViewportClient* ViewportClient, float DeltaTime)
+void FHMEdMode::Tick(FEditorViewportClient* ViewportClient, float DeltaTime)
 {
 	FEdMode::Tick(ViewportClient, DeltaTime);
 	for (TActorIterator<AHMTile> It(ViewportClient->GetWorld()); It; ++It)
@@ -65,7 +61,7 @@ void FHexMapEdMode::Tick(FEditorViewportClient* ViewportClient, float DeltaTime)
 	}
 }
 
-bool FHexMapEdMode::StartTracking(FEditorViewportClient* ViewportClient, FViewport* InViewport)
+bool FHMEdMode::StartTracking(FEditorViewportClient* ViewportClient, FViewport* InViewport)
 {
 	for (TActorIterator<AHMTile> It(ViewportClient->GetWorld()); It; ++It)
 	{
@@ -75,7 +71,7 @@ bool FHexMapEdMode::StartTracking(FEditorViewportClient* ViewportClient, FViewpo
 	return FEdMode::StartTracking(ViewportClient, InViewport);
 }
 
-bool FHexMapEdMode::EndTracking(FEditorViewportClient* ViewportClient, FViewport* InViewport)
+bool FHMEdMode::EndTracking(FEditorViewportClient* ViewportClient, FViewport* InViewport)
 {
 	for (TActorIterator<AHMTile> It(ViewportClient->GetWorld()); It; ++It)
 	{
@@ -85,7 +81,7 @@ bool FHexMapEdMode::EndTracking(FEditorViewportClient* ViewportClient, FViewport
 	return FEdMode::EndTracking(ViewportClient, InViewport);
 }
 
-bool FHexMapEdMode::UsesToolkits() const
+bool FHMEdMode::UsesToolkits() const
 {
 	return true;
 }

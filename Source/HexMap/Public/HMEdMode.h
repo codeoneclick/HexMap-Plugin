@@ -6,7 +6,7 @@
 
 #include "EdMode.h"
 
-class FHexMapEdMode : public FEdMode
+class FHMEdMode : public FEdMode
 {
 protected:
 
@@ -18,8 +18,8 @@ protected:
 
 public:
 
-	FHexMapEdMode();
-	virtual ~FHexMapEdMode();
+	FHMEdMode();
+	virtual ~FHMEdMode() = default;
 
 	virtual void Enter() override;
 	virtual void Exit() override;
