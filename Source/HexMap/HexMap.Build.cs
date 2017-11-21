@@ -13,13 +13,14 @@ public class HexMap : ModuleRules
             "RenderCore"
         });
 
-        if (UEBuildConfiguration.bBuildEditor == true)
+        if (Target.Type == TargetType.Editor)
         {
             PrivateDependencyModuleNames.AddRange(new string[]
             {
                 "InputCore",
                 "SlateCore",
                 "Slate",
+                "Projects",
                 "RenderCore",
                 "ShaderCore",
                 "RHI",

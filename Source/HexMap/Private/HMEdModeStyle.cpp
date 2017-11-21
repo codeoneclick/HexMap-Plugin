@@ -7,12 +7,13 @@
 #include "HexMap.h"
 #include "HMEdModeStyle.h"
 #include "SlateStyle.h"
+#include "IPluginManager.h"
 
 #define ICON_TAB_MODE( RelativePath, ... ) FSlateImageBrush( FHMEdModeStyle::InContent( RelativePath, ".png" ), __VA_ARGS__ )
 
 FString FHMEdModeStyle::InContent(const FString& RelativePath, const ANSICHAR* Extension)
 {
-	static FString ContentDir = FPaths::ProjectPluginsDir() / TEXT("HexMapExtension/Content");
+	static FString ContentDir = IPluginManager::Get().FindPlugin(TEXT("HexMap"))->GetContentDir();
 	return (ContentDir / RelativePath) + Extension;
 }
 
