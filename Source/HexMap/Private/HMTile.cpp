@@ -63,7 +63,7 @@ void AHMTile::OnEditorTick(float DeltaTime)
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "ñan't attach Tile to unknown grid!");
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, "can't attach Tile to unknown grid!");
 		}
 
 		if (!IsAttachedTo(Grid))
