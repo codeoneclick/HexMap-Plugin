@@ -1,6 +1,7 @@
 
 #include "HMCoord.h"
 #include "Engine.h"
+#include <cmath>
 #include <vector>
 #include <limits>
 
