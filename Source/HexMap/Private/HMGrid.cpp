@@ -180,10 +180,6 @@ void AHMGrid::OnEditorTick(float DeltaTime)
 						{
 							TilesToLocationsLinkages.Add(TileOperation.Tile->UUID.HexCoord.ToVec(), TileOperation.Tile);
 						}
-						else
-						{
-							ensure(false);
-						}
 					}
 				}
 				break;
