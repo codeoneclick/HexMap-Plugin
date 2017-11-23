@@ -81,6 +81,7 @@ void UHMGridPropertiesComponent::SetupTilesNeighbours()
 				AHMTile** NeighbourTile = Grid->TilesToLocationsLinkages.Find(NeighbourTileHexCoord.ToVec());
 				if (NeighbourTile)
 				{
+					ensure((*NeighbourTile) != nullptr);
 					Tile->Neighbours.Add((*NeighbourTile));
 				}
 			}

@@ -114,20 +114,34 @@ void AHMGrid::OnTileSizeChanged(float TileSize_)
 	UpdateTiles();
 }
 
+void AHMGrid::Validate()
+{
+	TArray<FIntVector> InvalidTiles;
+	for (auto TileIt : TilesToLocationsLinkages)
+	{
+		if (!TileIt.Value || (TileIt.Value && TileIt.Value->UUID.IsUndefined()))
+		{
+			InvalidTiles.Add(TileIt.Key);
+		}
+	}
+	for (const FIntVector& Key : InvalidTiles)
+	{
+		TilesToLocationsLinkages.Remove(Key);
+		UE_LOG(LogTemp, Warning, TEXT("Removed invalid Tile!"));
+	}
+}
+
 #if WITH_EDITOR
 
 void AHMGrid::OnEditorTick(float DeltaTime)
 {
 	if (!OperationQueue.IsEmpty())
 	{
-		Tiles.RemoveAll([](AHMTile* Tile_) {
-			return Tile_ == nullptr;
-		});
-
 		FHMTileOperation TileOperation;
 		while (!OperationQueue.IsEmpty())
 		{
 			OperationQueue.Peek(TileOperation);
+			ensure(TileOperation.Tile != nullptr);
 			switch (TileOperation.Operation)
 			{
 				case EHMTileOperation::OP_ADD:
@@ -139,10 +153,10 @@ void AHMGrid::OnEditorTick(float DeltaTime)
 						{
 							TilesToLocationsLinkages.Add(TileOperation.Tile->UUID.HexCoord.ToVec(), TileOperation.Tile);
 						}
-					}
-					if (Tiles.Find(TileOperation.Tile) == INDEX_NONE)
-					{
-						Tiles.Add(TileOperation.Tile);
+						else
+						{
+							ensure(false);
+						}
 					}
 				}
 				break;
@@ -164,7 +178,6 @@ void AHMGrid::OnEditorTick(float DeltaTime)
 					{
 						TilesToLocationsLinkages.Remove(TileOperation.Tile->UUID.HexCoord.ToVec());
 					}
-					Tiles.Remove(TileOperation.Tile);
 				}
 				break;
 				default:
@@ -175,6 +188,8 @@ void AHMGrid::OnEditorTick(float DeltaTime)
 			}
 			OperationQueue.Pop();
 		}
+		Validate();
+		TilesToLocationsLinkages.GenerateValueArray(Tiles);
 		UpdateTiles();
 	}
 }

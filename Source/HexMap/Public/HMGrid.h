@@ -82,6 +82,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TMap<FIntVector, class AHMTile*> TilesToLocationsLinkages;
 
+	void Validate();
+
 	void OnTileSizeChanged(float TileSize_);
 
 #if WITH_EDITOR
