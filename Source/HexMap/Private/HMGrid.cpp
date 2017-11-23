@@ -124,10 +124,37 @@ void AHMGrid::Validate()
 			InvalidTiles.Add(TileIt.Key);
 		}
 	}
+	TArray<AHMTile*> UniqueValidatedTiles;
+	TilesToLocationsLinkages.GenerateValueArray(UniqueValidatedTiles);
+	UniqueValidatedTiles.RemoveAll([](AHMTile* Tile) {
+		return Tile == nullptr;
+	});
+	UniqueValidatedTiles.Sort([](const AHMTile& LTile, const AHMTile& RTile) {
+		return LTile.GetUniqueID() < RTile.GetUniqueID();
+	});
+	AHMTile* PreviousTile = nullptr;
+	FHMTileUUID PreviousUUID = FHMTileUUID::Undefined();
+	for (AHMTile* Tile : UniqueValidatedTiles)
+	{
+		if (Tile == PreviousTile)
+		{
+			InvalidTiles.Add(PreviousUUID.HexCoord.ToVec());
+			InvalidTiles.Add(Tile->UUID.HexCoord.ToVec());
+		}
+		PreviousTile = Tile;
+		PreviousUUID = Tile->UUID;
+	}
+
 	for (const FIntVector& Key : InvalidTiles)
 	{
+		auto TileIt = TilesToLocationsLinkages.Find(Key);
+		if (TileIt && (*TileIt))
+		{
+			(*TileIt)->bAttached = false;
+			(*TileIt)->Mark();
+		}
 		TilesToLocationsLinkages.Remove(Key);
-		UE_LOG(LogTemp, Warning, TEXT("Removed invalid Tile!"));
+		UE_LOG(LogTemp, Warning, TEXT("Deattached invalid Tile!"));
 	}
 }
 
