@@ -76,6 +76,8 @@ void AHMGrid::UpdateTilesVisual()
 				if (!TrianglesKeys.Contains(NeighbourTileHexCoord.ToVec()))
 				{
 					FVector2D Location2D = FHMCoord::ToLocation(Layout, NeighbourTileHexCoord);
+					Location2D.X -= GetActorLocation().X;
+					Location2D.Y -= GetActorLocation().Y;
 					UHMMeshComponent::AddHexTileGeometry(Location2D, VisualTileSize, Triangles);
 					TrianglesKeys.Add(NeighbourTileHexCoord.ToVec());
 				}
@@ -83,6 +85,8 @@ void AHMGrid::UpdateTilesVisual()
 			if (!TrianglesKeys.Contains(HexCoord.ToVec()))
 			{
 				FVector2D Location2D = FHMCoord::ToLocation(Layout, HexCoord);
+				Location2D.X -= GetActorLocation().X;
+				Location2D.Y -= GetActorLocation().Y;
 				UHMMeshComponent::AddHexTileGeometry(Location2D, VisualTileSize, Triangles);
 				TrianglesKeys.Add(HexCoord.ToVec());
 			}

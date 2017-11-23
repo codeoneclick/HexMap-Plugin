@@ -56,13 +56,16 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	struct FHMTileUUID UUID = FHMTileUUID::Undefined();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	bool bAttached = true;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	UMaterialInterface* DetachedMaterial;
 
 	UPROPERTY(EditAnywhere)
+	UMaterialInterface* GlobalMaterial;
+
+	UPROPERTY(VisibleAnywhere)
 	TArray<AHMTile*> Neighbours;
 
 	UPROPERTY(EditAnywhere)

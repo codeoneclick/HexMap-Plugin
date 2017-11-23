@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include <limits>
+#include <vector>
 #include "HMNavigation.generated.h"
 
 USTRUCT(Blueprintable, BlueprintType)

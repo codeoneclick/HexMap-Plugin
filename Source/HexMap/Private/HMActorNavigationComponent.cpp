@@ -12,6 +12,7 @@
 #include "Components/SplineMeshComponent.h"
 #include "HMActorPlacementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include <limits>
 
 UHMActorNavigationComponent::UHMActorNavigationComponent()
 {

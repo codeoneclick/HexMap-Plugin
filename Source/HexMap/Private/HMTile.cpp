@@ -128,6 +128,16 @@ void AHMTile::PostEditChangeProperty(struct FPropertyChangedEvent& Event)
 	{
 		Mark();
 	}
+
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AHMTile, GlobalMaterial))
+	{
+		TArray<UActorComponent*> StaticMeshComponents = GetComponentsByClass(UMeshComponent::StaticClass());
+		for (UActorComponent* ActorComponent : StaticMeshComponents)
+		{
+			UMeshComponent* ChunkMeshComponent = Cast<UMeshComponent>(ActorComponent);
+			ChunkMeshComponent->SetMaterial(0, GlobalMaterial);
+		}
+	}
 }
 
 void AHMTile::EditorApplyTranslation(const FVector & DeltaTranslation, bool bAltDown, bool bShiftDown, bool bCtrlDown)
