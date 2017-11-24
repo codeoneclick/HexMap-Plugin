@@ -6,6 +6,7 @@
 AHMGrid::AHMGrid()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bLockLocation = true;
 	Layout = FHMLayout::Init(FHMLayout::Flat, FVector2D(TileSize, TileSize), FVector2D(TileSize * .5f, TileSize * .5f));
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HMGridComponent"));;
 
@@ -116,33 +117,18 @@ void AHMGrid::OnTileSizeChanged(float TileSize_)
 
 void AHMGrid::Validate()
 {
-	TArray<FIntVector> InvalidTiles;
+	TSet<FIntVector> InvalidTiles;
+	TilesToLocationsLinkages.ValueSort([](const AHMTile& LTile, const AHMTile& RTile) {
+		return LTile.GetUniqueID() < RTile.GetUniqueID();
+	});
+	AHMTile* NotUniqueTile = nullptr;
 	for (auto TileIt : TilesToLocationsLinkages)
 	{
-		if (!TileIt.Value || (TileIt.Value && TileIt.Value->UUID.IsUndefined()))
+		if (!TileIt.Value || (TileIt.Value && TileIt.Value->UUID.IsUndefined()) || (TileIt.Value == NotUniqueTile))
 		{
 			InvalidTiles.Add(TileIt.Key);
 		}
-	}
-	TArray<AHMTile*> UniqueValidatedTiles;
-	TilesToLocationsLinkages.GenerateValueArray(UniqueValidatedTiles);
-	UniqueValidatedTiles.RemoveAll([](AHMTile* Tile) {
-		return Tile == nullptr;
-	});
-	UniqueValidatedTiles.Sort([](const AHMTile& LTile, const AHMTile& RTile) {
-		return LTile.GetUniqueID() < RTile.GetUniqueID();
-	});
-	AHMTile* PreviousTile = nullptr;
-	FHMTileUUID PreviousUUID = FHMTileUUID::Undefined();
-	for (AHMTile* Tile : UniqueValidatedTiles)
-	{
-		if (Tile == PreviousTile)
-		{
-			InvalidTiles.Add(PreviousUUID.HexCoord.ToVec());
-			InvalidTiles.Add(Tile->UUID.HexCoord.ToVec());
-		}
-		PreviousTile = Tile;
-		PreviousUUID = Tile->UUID;
+		NotUniqueTile = TileIt.Value;
 	}
 
 	for (const FIntVector& Key : InvalidTiles)

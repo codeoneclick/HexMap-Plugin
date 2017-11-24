@@ -35,6 +35,8 @@ void UHMGridPropertiesComponent::SetupTilesProperties()
 	ClearTilesLocations.Empty();
 
 	AHMGrid* Grid = FHMUtilities::GetGrid(GetWorld());
+	Grid->Validate();
+
 	TArray<AHMTile*> Tiles = Grid->Tiles;
 
 	for (AHMTile* Tile : Tiles)

@@ -67,6 +67,15 @@ bool FHMEdMode::StartTracking(FEditorViewportClient* ViewportClient, FViewport* 
 		AHMTile* Tile = *It;
 		Tile->OnEditorMousePressed();
 	}
+	USelection* Selection = GEditor->GetSelectedActors();
+	for (int32 i = 0; i < Selection->Num(); ++i)
+	{
+		UObject* Object = Selection->GetSelectedObject(i);
+		if (Object && Object->IsA(AHMGrid::StaticClass()))
+		{
+			GEditor->SelectActor(Cast<AActor>(Object), false, true);
+		}
+	}
 	return FEdMode::StartTracking(ViewportClient, InViewport);
 }
 

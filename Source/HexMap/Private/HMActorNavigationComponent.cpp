@@ -102,7 +102,6 @@ bool UHMActorNavigationComponent::GetPath(const FVector& GoalLocation)
 			AHMGrid* Grid = FHMUtilities::GetGrid(GetWorld());
 			FHMCoord HexCoord = FHMUtilities::ToHex(GetWorld(), SolutionPoint);
 			AHMTile** Tile = Grid->TilesToLocationsLinkages.Find(HexCoord.ToVec());
-			ensure(Tile != nullptr);
 			if (Tile)
 			{
 				UHMTileNavigationComponent* TileNavigationComponent = (*Tile)->FindComponentByClass<UHMTileNavigationComponent>();

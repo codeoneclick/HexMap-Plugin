@@ -28,8 +28,6 @@ void UHMGridNavigationComponent::SetupNavigation()
 	Navigation = MakeShareable(new FHMNavigation());
 	
 	AHMGrid* Grid = FHMUtilities::GetGrid(GetWorld());
-
-	Navigation->SetTileHeight(Grid->TileHeight);
 	Navigation->SetMaxPassableDifferential(MaxPassableDifferential);
 	TArray<AHMTile*> Tiles = Grid->Tiles;
 

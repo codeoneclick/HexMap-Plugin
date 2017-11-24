@@ -229,9 +229,23 @@ void FHMNavigation::ConstructNavigation(bool bReConstruct)
 				UE_LOG(LogTemp, Warning, TEXT("Can't find TileNavigationComponent!"));
 			}
 
+			float MaxBoundZ = std::numeric_limits<float>::min();
+			TArray<UActorComponent*> StaticMeshComponents = Tile->GetComponentsByClass(UMeshComponent::StaticClass());
+			for (UActorComponent* ActorComponent : StaticMeshComponents)
+			{
+				UMeshComponent* ChunkMeshComponent = Cast<UMeshComponent>(ActorComponent);
+				FVector MaxBounds;
+				FBoxSphereBounds MeshBounds = ChunkMeshComponent->Bounds;
+				MaxBounds = MeshBounds.Origin + MeshBounds.BoxExtent;
+				if (MaxBounds.Z > MaxBoundZ)
+				{
+					MaxBoundZ = MaxBounds.Z;
+				}
+			}
+
 			NavigationNode->SetPassable(bIsPassable);
 			NavigationNode->SetPosition(Location.X, Location.Y);
-			NavigationNode->SetHeight(Location.Z);
+			NavigationNode->SetHeight(MaxBoundZ);
 			Nodes.Add(Tile, NavigationNode);
 		}
 	}
@@ -256,11 +270,6 @@ void FHMNavigation::ConstructNavigation(bool bReConstruct)
 			}
 		}
 	}
-}
-
-void FHMNavigation::SetTileHeight(float TileHeight_)
-{
-	TileHeight = TileHeight_;
 }
 
 void FHMNavigation::SetMaxPassableDifferential(float MaxPassableDifferential_)
@@ -288,7 +297,7 @@ bool FHMNavigation::GetPath(AHMTile* StartTile, AHMTile* GoalTile, TArray<FVecto
 				for (const TSharedPtr<FHMNavigationAStarNode>& AStarNode : Solution)
 				{
 					TSharedPtr<FHMNavigationConcreteNode> ConcreteNode = StaticCastSharedPtr<FHMNavigationConcreteNode>(AStarNode);
-					OutSolution.Add(FVector(AStarNode->GetX(), AStarNode->GetY(), ConcreteNode->GetHeight() + TileHeight));
+					OutSolution.Add(FVector(AStarNode->GetX(), AStarNode->GetY(), ConcreteNode->GetHeight()));
 				}
 				bResult = true;
 			}

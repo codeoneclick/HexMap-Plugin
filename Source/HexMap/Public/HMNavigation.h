@@ -189,7 +189,6 @@ protected:
 	TArray<class AHMTile*> Tiles;
 	TMap<class AHMTile*, TSharedPtr<FHMNavigationConcreteNode>> Nodes;
 
-	float TileHeight = 0.f;
 	float MaxPassableDifferential = std::numeric_limits<float>::max();
 
 public:
@@ -199,7 +198,6 @@ public:
 	void AddTile(class AHMTile* Tile);
 	void RemoveTile(class AHMTile* Tile);
 	virtual void ConstructNavigation(bool bReConstruct = false);
-	void SetTileHeight(float TileHeight_);
 	void SetMaxPassableDifferential(float MaxPassableDifferential_);
 
 	bool GetPath(AHMTile* StartTile, AHMTile* GoalTile, TArray<FVector>& OutSolution);
