@@ -6,7 +6,13 @@
 AHMGrid::AHMGrid()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+#if WITH_EDITOR
+
 	bLockLocation = true;
+
+#endif
+
 	Layout = FHMLayout::Init(FHMLayout::Flat, FVector2D(TileSize, TileSize), FVector2D(TileSize * .5f, TileSize * .5f));
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HMGridComponent"));;
 
