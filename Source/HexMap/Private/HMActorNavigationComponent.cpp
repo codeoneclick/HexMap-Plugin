@@ -12,6 +12,7 @@
 #include "Components/SplineMeshComponent.h"
 #include "HMActorPlacementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Navigation/PathFollowingComponent.h"
 #include <limits>
 
 UHMActorNavigationComponent::UHMActorNavigationComponent()
@@ -57,6 +58,11 @@ void UHMActorNavigationComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		}
 		if (GetPath(LastGoalLocation) && PawnController)
 		{
+			UPathFollowingComponent* PathFollowingComponent = PawnController->FindComponentByClass<UPathFollowingComponent>();
+			if (PathFollowingComponent != nullptr)
+			{
+				PathFollowingComponent->SetPreciseReachThreshold(0.f, 0.f);
+			}
 			UNavigationSystem::SimpleMoveToLocation(PawnController, GetNextNavigationPoint());
 		}
 		if (bDebug)
