@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -50,25 +50,25 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	class UHMTilePropertiesComponent* PropertiesComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	struct FHMTileUUID UUID = FHMTileUUID::Undefined();
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	bool bAttached = true;
 
 	UPROPERTY()
 	UMaterialInterface* DetachedMaterial;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	UMaterialInterface* GlobalMaterial;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	TArray<AHMTile*> Neighbours;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	TSet<FString> Groups;
 
 	bool IsInGroup(const FString& GroupName) const;

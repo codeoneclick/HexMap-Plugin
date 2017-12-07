@@ -1,3 +1,4 @@
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #include "HexMap.h"
 #include "HMEdMode.h"

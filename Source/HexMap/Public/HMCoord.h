@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -21,13 +21,13 @@ public:
 		EVEN UMETA(DisplayName = "Even") = 1
 	};
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	int32 Q;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	int32 R;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	int32 S;
 
 	static const std::vector<FHMCoord> HexDirections;
@@ -55,13 +55,13 @@ struct FHMFractionalCoord
 
 public:
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float Q;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float R;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float S;
 
 	static FHMFractionalCoord Init(float Q_, float R_, float S_);
@@ -74,31 +74,31 @@ struct FHMOrientation
 
 public:
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float F0;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float F1;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float F2;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float F3;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float B0;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float B1;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float B2;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float B3;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float StartAngle;
 
 	static FHMOrientation Init(float F0_, float F1_, float F2_, float F3_, float B0_, float B1_, float B2_, float B3_, float StartAngle_);
@@ -114,13 +114,13 @@ public:
 	static const FHMOrientation Pointy;
 	static const FHMOrientation Flat;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	FHMOrientation Orientation;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	FVector2D Size;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	FVector2D Origin;
 
 	static FHMLayout Init(const FHMOrientation& Orientation_, const FVector2D& Size_, const FVector2D& Origin_);

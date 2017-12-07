@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -12,7 +12,7 @@ struct FHMTileUUID
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	FHMCoord HexCoord;
 
 	static FHMTileUUID Init(const FHMCoord& HexCoord_);

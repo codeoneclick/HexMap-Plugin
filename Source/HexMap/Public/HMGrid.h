@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -64,22 +64,22 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	FHMLayout Layout;
 
-	UPROPERTY(EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
+	UPROPERTY(Category = "Hex Map", EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
 	float TileSize = 200.f;
 
-	UPROPERTY(EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
+	UPROPERTY(Category = "Hex Map", EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
 	float TileHeight = 400.f;
 
 	UPROPERTY()
 	class UHMMeshComponent* GeometryComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	TArray<class AHMTile*> Tiles;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	TMap<FIntVector, class AHMTile*> TilesToLocationsLinkages;
 
 	void Validate();

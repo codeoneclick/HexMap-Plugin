@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -23,19 +23,19 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	TArray<FVector> TilesLocations;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	TArray<FVector> ClearTilesLocations;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float TileSize;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	float TileHeight;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	float MinPossibleDifferential = 10.f;
 
 	virtual void SetupBaseProperties();

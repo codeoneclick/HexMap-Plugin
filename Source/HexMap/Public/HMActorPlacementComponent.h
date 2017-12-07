@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -39,31 +39,31 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = "Hex Map", VisibleAnywhere)
 	FHMLayout Layout;
 
-	UPROPERTY(EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
+	UPROPERTY(Category = "Hex Map", EditAnywhere, meta = (ClampMin = 1.f, ClampMax = 1000.f))
 	float TileSize = 200.f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	int32 Radius = 1;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	int32 SizeX = 2;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	int32 SizeY = 2;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	EPlacementModeEnum PlacementMode = EPlacementModeEnum::PM_CIRCLE;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	class UStaticMeshComponent* RootComponent = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	class UMaterial* Material = nullptr;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	class UStaticMesh* Mesh = nullptr;
 
 	UPROPERTY()

@@ -1,3 +1,5 @@
+// Copyright serhii serhiiv 2017. All rights reserved.
+
 #pragma once
  
 #include "ModuleManager.h"

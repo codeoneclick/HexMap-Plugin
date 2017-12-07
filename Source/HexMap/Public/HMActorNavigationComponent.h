@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -15,16 +15,16 @@ public:
 
 	UHMActorNavigationComponent();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	class UMaterialInterface* DebugNavigationMaterial;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	class UStaticMesh* DebugNavigationMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	float SplineInterval = 50.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	float SplineZOffset = 50.f;
 
 	TArray<FVector> Solution;
@@ -41,48 +41,48 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	float AcceptableRadiusBetweenNavigationPoints = 10.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	float AcceptableRadiusToLastNavigationPoint = 50.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	float AcceptableRadius = 50.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	int32 SpreadingRadius = 2;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	TArray<class AHMTile*> CapturedTiles;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	bool bDebug = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	FLinearColor DebugColor = FLinearColor::Green;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Hex Map", EditAnywhere, BlueprintReadWrite)
 	class UHMGridNavigationComponent* GridNavigationComponent = nullptr;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Category = "Hex Map", BlueprintCallable)
 	bool GetPath(const FVector& GoalLocation);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Category = "Hex Map", BlueprintCallable)
 	void Interrupt();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Category = "Hex Map", BlueprintCallable)
 	FVector GetNextNavigationPoint();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Category = "Hex Map", BlueprintCallable)
 	bool IsGoalLocationReached(const FVector& GoalLocation, float AcceptableRadius_ = -1.f) const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Category = "Hex Map", BlueprintCallable)
 	bool IsGoalActorReached(AActor* Actor, float AcceptableRadius_ = -1.f) const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Category = "Hex Map", BlueprintCallable)
 	bool MoveToLocation(AController* Controller, const FVector& GoalLocation);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Category = "Hex Map", BlueprintCallable)
 	bool MoveToActor(AController* Controller, AActor* Actor);
 };

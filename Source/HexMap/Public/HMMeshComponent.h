@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -11,16 +11,16 @@ struct FHMMeshVertex
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, Category = Triangle)
+	UPROPERTY()
 	FVector Position;
 
-	UPROPERTY(EditAnywhere, Category = Triangle)
+	UPROPERTY()
 	FColor Color;
 
-	UPROPERTY(EditAnywhere, Category = Triangle)
+	UPROPERTY()
 	float U;
 
-	UPROPERTY(EditAnywhere, Category = Triangle)
+	UPROPERTY()
 	float V;
 };
 
@@ -29,7 +29,7 @@ struct FHMMeshTriangle
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, Category = Triangle)
+	UPROPERTY()
 	TArray<FHMMeshVertex> Vertices;
 };
 

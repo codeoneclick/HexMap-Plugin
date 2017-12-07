@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #pragma once
 
@@ -23,7 +23,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Category = "Hex Map", EditAnywhere)
 	bool bIsPassable = true;
 
 	virtual bool IsPassable(class UHMActorNavigationComponent* ActorNavigationComponent) const;

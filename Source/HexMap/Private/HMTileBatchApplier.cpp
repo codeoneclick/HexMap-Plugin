@@ -1,3 +1,4 @@
+// Copyright serhii serhiiv 2017. All rights reserved.
 
 #include "HMTileBatchApplier.h"
 #include "Engine.h"
