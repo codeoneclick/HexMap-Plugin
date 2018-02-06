@@ -14,7 +14,7 @@
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"Installed": true,
-	"MarketplaceURL" : "com.epicgames.launcher://ue/marketplace/content/eb647863a1664469aa5c212294afd890",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/eb647863a1664469aa5c212294afd890",
 	"Modules": [
 		{
 			"Name": "HexMap",
@@ -22,8 +22,7 @@
 			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [
 				"Win32",
-				"Win64", 
-				"Android"
+				"Win64"
 			]
 		}
 	]
