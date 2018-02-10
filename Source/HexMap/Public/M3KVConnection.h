@@ -4,20 +4,26 @@
 
 #include <functional>
 #include "CoreMinimal.h"
+#include "M3KVListener.h"
 
 template<typename T>
-class M3KVConnection
+class M3KVConnection : public M3KVListener<T>
 {
 private:
 
-	std::function<void(const T&, const T&)> Callback;
+	std::function<void(const T&)> Callback;
+
+	void Call(const T& Value) {
+		return Callback(Value);
+	};
 
 public:
-	M3KVConnection(const std::function<void(const T&, const T&)>& Callback) {
-		this->Callback = Callback;
-	}
 
-	void Call(const T& ValueA, const T& ValueB) {
-		return Callback(ValueA, ValueB);
-	}
+	M3KVConnection(const std::function<void(const T&)>& Callback) {
+		this->Callback = Callback;
+	};
+
+	void OnChanged(const M3KVProperty_INTERFACE_SharedPtr& Prop, const T& Value) {
+		this->Call(Value);
+	};
 };

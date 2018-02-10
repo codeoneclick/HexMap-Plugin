@@ -2,43 +2,31 @@
 
 #pragma once
 
-#include <cassert>
-#include <memory>
-#include <functional>
-#include <vector>
-#include <algorithm>
 #include "CoreMinimal.h"
 #include "M3KVBinding.h"
+#include "M3Utilities.h"
 
-template<typename T>
-class M3KVConnection;
-
-template<typename T>
-class M3KVDispatcher : public M3KVBinding<T> 
+class M3KVDispatcher : public M3KVBinding
 {
-private:
-
-	friend class M3KVConnection<T>;
-
 protected:
 
-	std::vector<std::shared_ptr<M3KVConnection<T>>> Observers;
+	std::vector<M3KVListener_INTERFACE_SharedPtr> Listeners;
 
 public:
 
 	virtual ~M3KVDispatcher() = default;
 
-	void Subscribe(const std::shared_ptr<M3KVConnection<T>>& Connection) {
-		Observers.push_back(Connection);
+	void Subscribe(const M3KVListener_INTERFACE_SharedPtr& Listener) {
+		Listeners.push_back(Listener);
 	}
 
-	void Unsubscribe(const std::shared_ptr<M3KVConnection<T>>& Connection) {
-		std::remove_if(Observers.begin(), Observers.end(), [Connection](const std::shared_ptr<M3KVConnection<T>>& Observer) {
-			return Observer == Connection;
+	void Unsubscribe(const M3KVListener_INTERFACE_SharedPtr& Listener) {
+		std::remove_if(Listeners.begin(), Listeners.end(), [Listener](const M3KVListener_INTERFACE_SharedPtr& aListener) {
+			return aListener == Listener;
 		});
 	}
 
 	void UnsubscribeAll() {
-		Observers.clear();
+		Listeners.clear();
 	}
 };
