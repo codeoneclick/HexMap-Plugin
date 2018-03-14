@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
+	"VersionName": "1.0.1",
 	"FriendlyName": "HexMap",
 	"Description": "Hex Map Plugin",
 	"Category": "Editor",
@@ -10,7 +10,7 @@
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "s.serhiiv@gmail.com",
-	"EngineVersion": "4.18.0",
+	"EngineVersion": "4.19.0",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"Installed": true,

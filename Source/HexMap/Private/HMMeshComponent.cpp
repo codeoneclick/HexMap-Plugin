@@ -41,54 +41,28 @@ public:
 	}
 };
 
-class FHMVertexFactory : public FLocalVertexFactory
-{
-public:
-
-	void Init_RenderThread(const FHMVBO* VertexBuffer)
-	{
-		check(IsInRenderingThread());
-
-		FDataType Declaration;
-		Declaration.PositionComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, Position, VET_Float3);
-		Declaration.TextureCoordinates.Add(
-			FVertexStreamComponent(VertexBuffer, STRUCT_OFFSET(FDynamicMeshVertex, TextureCoordinate), sizeof(FDynamicMeshVertex), VET_Float2)
-		);
-		Declaration.TangentBasisComponents[0] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, TangentX, VET_PackedNormal);
-		Declaration.TangentBasisComponents[1] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, TangentZ, VET_PackedNormal);
-		Declaration.ColorComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer, FDynamicMeshVertex, Color, VET_Color);
-
-		SetData(Declaration);
-	}
-
-	void Init(const FHMVBO* VertexBuffer)
-	{
-		if (IsInRenderingThread())
-		{
-			Init_RenderThread(VertexBuffer);
-		}
-		else
-		{
-			ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
-				InitHMVertexFactory,
-				FHMVertexFactory*, VertexFactory, this,
-				const FHMVBO*, VertexBuffer, VertexBuffer,
-				{
-					VertexFactory->Init_RenderThread(VertexBuffer);
-				});
-		}
-	}
-};
-
 class FHMMeshSceneProxy : public FPrimitiveSceneProxy
 {
 public:
-
-	FHMMeshSceneProxy(UHMMeshComponent* Component) :
-		FPrimitiveSceneProxy(Component),
-		MaterialRelevance(Component->GetMaterialRelevance(GetScene().GetFeatureLevel()))
+	SIZE_T GetTypeHash() const override
 	{
-		for (int32 TriIdx = 0; TriIdx<Component->Triangles.Num(); TriIdx++)
+		static size_t UniquePointer;
+		return reinterpret_cast<size_t>(&UniquePointer);
+	}
+
+	FHMMeshSceneProxy(UHMMeshComponent* Component)
+		: FPrimitiveSceneProxy(Component)
+		, VertexFactory(GetScene().GetFeatureLevel(), "FCustomMeshSceneProxy")
+		, MaterialRelevance(Component->GetMaterialRelevance(GetScene().GetFeatureLevel()))
+	{
+		const FColor VertexColor(255, 255, 255);
+
+		TArray<FDynamicMeshVertex> Vertices;
+		const int32 NumTris = Component->Triangles.Num();
+		Vertices.AddUninitialized(NumTris * 3);
+		IndexBuffer.Indices.AddUninitialized(NumTris * 3);
+
+		for (int32 TriIdx = 0; TriIdx < NumTris; TriIdx++)
 		{
 			FHMMeshTriangle& Triangle = Component->Triangles[TriIdx];
 
@@ -99,27 +73,34 @@ public:
 			const FVector TangentZ = (Edge02 ^ Edge01).GetSafeNormal();
 			const FVector TangentY = (TangentX ^ TangentZ).GetSafeNormal();
 
-			FDynamicMeshVertex Vertex;
-			int32 VIndex = 0;
-			for (int32 VertexInTriangleIndex = 0; VertexInTriangleIndex < 3; ++VertexInTriangleIndex)
-			{
-				Vertex.Position = Triangle.Vertices[VertexInTriangleIndex].Position;
-				Vertex.Color = Triangle.Vertices[VertexInTriangleIndex].Color;
-				Vertex.SetTangents(TangentX, TangentY, TangentZ);
-				Vertex.TextureCoordinate.Set(Triangle.Vertices[VertexInTriangleIndex].U, Triangle.Vertices[VertexInTriangleIndex].V);
-				VIndex = VertexBuffer.Vertices.Add(Vertex);
-				IndexBuffer.Indices.Add(VIndex);
-			}
+			FDynamicMeshVertex Vert;
+
+			Vert.Color = VertexColor;
+			Vert.SetTangents(TangentX, TangentY, TangentZ);
+
+			Vert.Position = Triangle.Vertices[0].Position;
+			Vertices[TriIdx * 3 + 0] = Vert;
+			IndexBuffer.Indices[TriIdx * 3 + 0] = TriIdx * 3 + 0;
+
+			Vert.Position = Triangle.Vertices[1].Position;
+			Vertices[TriIdx * 3 + 1] = Vert;
+			IndexBuffer.Indices[TriIdx * 3 + 1] = TriIdx * 3 + 1;
+
+			Vert.Position = Triangle.Vertices[2].Position;
+			Vertices[TriIdx * 3 + 2] = Vert;
+			IndexBuffer.Indices[TriIdx * 3 + 2] = TriIdx * 3 + 2;
 		}
 
-		VertexFactory.Init(&VertexBuffer);
+		VertexBuffers.InitFromDynamicVertex(&VertexFactory, Vertices);
 
-		BeginInitResource(&VertexBuffer);
+		BeginInitResource(&VertexBuffers.PositionVertexBuffer);
+		BeginInitResource(&VertexBuffers.StaticMeshVertexBuffer);
+		BeginInitResource(&VertexBuffers.ColorVertexBuffer);
 		BeginInitResource(&IndexBuffer);
 		BeginInitResource(&VertexFactory);
 
 		Material = Component->GetMaterial(0);
-		if (Material == nullptr)
+		if (Material == NULL)
 		{
 			Material = UMaterial::GetDefaultMaterial(MD_Surface);
 		}
@@ -127,7 +108,9 @@ public:
 
 	virtual ~FHMMeshSceneProxy()
 	{
-		VertexBuffer.ReleaseResource();
+		VertexBuffers.PositionVertexBuffer.ReleaseResource();
+		VertexBuffers.StaticMeshVertexBuffer.ReleaseResource();
+		VertexBuffers.ColorVertexBuffer.ReleaseResource();
 		IndexBuffer.ReleaseResource();
 		VertexFactory.ReleaseResource();
 	}
@@ -171,7 +154,7 @@ public:
 				BatchElement.FirstIndex = 0;
 				BatchElement.NumPrimitives = IndexBuffer.Indices.Num() / 3;
 				BatchElement.MinVertexIndex = 0;
-				BatchElement.MaxVertexIndex = VertexBuffer.Vertices.Num() - 1;
+				BatchElement.MaxVertexIndex = VertexBuffers.PositionVertexBuffer.GetNumVertices() - 1;
 				Mesh.ReverseCulling = IsLocalToWorldDeterminantNegative();
 				Mesh.Type = PT_TriangleList;
 				Mesh.DepthPriorityGroup = SDPG_World;
@@ -206,9 +189,9 @@ public:
 private:
 
 	UMaterialInterface* Material;
-	FHMVBO VertexBuffer;
-	FHMIBO IndexBuffer;
-	FHMVertexFactory VertexFactory;
+	FStaticMeshVertexBuffers VertexBuffers;
+	FDynamicMeshIndexBuffer32 IndexBuffer;
+	FLocalVertexFactory VertexFactory;
 
 	FMaterialRelevance MaterialRelevance;
 };
