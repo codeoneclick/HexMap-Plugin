@@ -34,8 +34,7 @@ public class HexMap : ModuleRules
                 "UnrealEd",
                 "LevelEditor",
                 "EditorStyle",
-                "ContentBrowser",
-                "CustomMeshComponent"
+                "ContentBrowser"
             });
         }
     }
